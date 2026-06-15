@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Inter = fonte da UI (mesma do mockup de referência — grotesk neutra,
+   ótima leitura em dashboard denso). Raleway/Sora ficam como fallback. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Raleway:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap');
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+  /* UI = Inter (mockup de referência). Raleway/system como fallback. */
+  --font-sans: 'Inter', 'Raleway', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Números dominantes também em Inter (bold tabular) — bate c/ mockup. */
+  --font-display: 'Inter', 'Sora', var(--font-sans);
+}
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Variáveis de tabela numérica — alinha colunas de números */
+  font-feature-settings: 'cv11', 'ss01', 'tnum';
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  /* Brand book: dark #111111 neutro (era #0a0a14 azulado). */
+  background-color: #111111;
+  color: #f1f5f9;
+  /* Ambient glow LARANJA #FF6A00 distribuído — atmosfera do brand book.
+     Sutil pra não competir com conteúdo. Fixed (não rola). */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -8%, rgba(255, 106, 0, 0.14), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 6% -4%, rgba(255, 106, 0, 0.07), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 96% 30%, rgba(34, 197, 94, 0.04), transparent 60%),
+    radial-gradient(ellipse 50% 30% at 50% 105%, rgba(255, 106, 0, 0.03), transparent 60%);
+  background-attachment: fixed;
+  /* Tira o "snap" mobile sem perder UX */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Selects nativos: opções legíveis no tema escuro ─────────────────────
+   O popup de <option> renderiza com o estilo do SO (fundo BRANCO no
+   Chrome/Windows), ignorando o color-scheme quando o <select> tem bg/cor
+   próprios. Forçar fundo escuro + texto claro deixa a lista legível em
+   TODO <select> do app (Recomendar, Usuários, Rotações, Hot Picks, Jogadores). */
+select option,
+select optgroup {
+  background-color: #18181b;  /* zinc-900 */
+  color: #f1f5f9;             /* slate-100 */
+}
+
+/* ─── Scrollbar custom (sutil, brand-aware) ─────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #334155;
+  border-radius: 3px;
+  transition: background-color 200ms;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #475569;
+}
+
+/* ─── Componentes utilitários reutilizáveis ─────────────────────────────── */
+@layer components {
+  /* Card padrão do app — usa essa classe pra qualquer container elevado.
+     Evita inconsistência de border-radius/borda/sombra entre views. */
+  /* Neutro (mai/2026) — slate (#1e293b, azulado) → #16161a. Casa com
+     o fundo #111 do brand book. Mesma família de .surface/.card-premium. */
+  .card {
+    @apply bg-[#16161a] border border-white/[0.06] rounded-xl shadow-soft;
+  }
+
+  /* Variante "elevada" pra cards principais (Terminal etc.) */
+  .card-raised {
+    @apply card shadow-raised;
+  }
+
+  /* Premium card — gradiente sutil, borda refinada, glass effect.
+     Pra cartões hero (HotPickCard, PlayerCard). Background mais profundo
+     que combina com o body bg novo (#0a0a14).
+     Detalhe premium: pseudo-element ::before cria highlight sutil no topo
+     do card — efeito "luz batendo" que dá sensação física, igual aos cards
+     do landing. */
+  /* Card premium (mai/2026, ref. dashboard brand book) — superfície
+     elevada SÓBRIA: levemente mais clara que o fundo, borda branca
+     ~6%, sombra suave, cantos generosos. Sem gradiente ruidoso nem
+     glow pesado — o premium vem da elevação + espaçamento, não de FX. */
+  .card-premium,
+  .surface {
+    @apply relative rounded-2xl
+           bg-[#16161a] border border-white/[0.06]
+           shadow-[0_1px_2px_rgb(0_0_0/0.3),0_8px_24px_-12px_rgb(0_0_0/0.55)]
+           transition-all duration-200;
+  }
+
+  /* Hover sutil — borda levemente mais viva + lift mínimo. */
+  .card-premium:hover {
+    @apply border-white/[0.10] -translate-y-px
+           shadow-[0_2px_4px_rgb(0_0_0/0.35),0_12px_32px_-12px_rgb(0_0_0/0.65)];
+  }
+
+  /* Surface interativa (game tiles, etc) — mesma base, hover c/ brand. */
+  .surface-interactive {
+    @apply rounded-xl bg-[#15151a] border border-white/[0.06]
+           transition-all duration-150
+           hover:border-white/[0.12] hover:bg-[#1a1a20];
+  }
+  .surface-interactive[data-active='true'] {
+    @apply border-brand-500/50 bg-brand-500/[0.07]
+           shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)];
+  }
+
+  /* Section pill — header com borda + tracking pesado, estilo "A SOLUÇÃO"
+     do landing. Usado nos section headers ("Sinais Fortes", "Neutros",
+     "Histórico", etc). Visual mais marcante que texto solto. */
+  .section-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1
+           text-[10px] font-bold uppercase tracking-[0.24em]
+           rounded-full border border-white/[0.07]
+           bg-white/[0.03] backdrop-blur-sm
+           text-slate-400;
+  }
+
+  /* Hero number — número dominante em cards (ex: PROJEÇÃO 32.5).
+     Usa Sora (display font) — peso visual maior que Inter no mesmo tamanho. */
+  .hero-number {
+    font-family: var(--font-display);
+    @apply text-4xl sm:text-5xl font-extrabold tabular leading-none tracking-tight;
+  }
+
+  /* Display font utility — pra números grandes (StatCell, hero stats).
+     Aplica Sora com tabular-nums já no estilo. */
+  .font-display {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Number caption — label pequena acima do hero number */
+  .hero-caption {
+    @apply text-[10px] uppercase tracking-[0.22em] font-bold text-slate-500;
+  }
+
+  /* Inline context badge — usado pra "+18% vs média", "Acima do ritmo" */
+  .context-pill {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full
+           text-[10px] font-semibold tracking-wide
+           border;
+  }
+
+  /* Botão primário (verde marca) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+           bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+           text-white font-medium text-sm
+           transition-colors duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-500/40
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Botão secundário (slate) */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg
+           bg-slate-800 hover:bg-slate-700 active:bg-slate-600
+           text-slate-200 border border-slate-700 hover:border-slate-600
+           font-medium text-sm
+           transition-colors duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-500/30;
+  }
+
+  /* Pill discreto (badges) */
+  .pill {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md
+           text-[10px] font-bold uppercase tracking-wider
+           border;
+  }
+
+  /* Skeleton shimmer — pra loading states */
+  .skeleton {
+    @apply rounded-md bg-gradient-to-r from-slate-800 via-slate-700/60 to-slate-800
+           bg-[length:200%_100%] animate-shimmer;
+  }
+
+  /* Container padrão da página — aproveita a tela inteira (estilo
+     mockup): sem container/max-w-7xl que deixava ~600px vazios em
+     telas largas. Margem lateral enxuta, cap alto só pra 4k. */
+  .page {
+    @apply w-full px-4 sm:px-5 lg:px-6 py-4;
+  }
+}
+
+/* ─── Tipografia padronizada para tabelas e dashboards ──────────────────── */
+@layer utilities {
+  /* Números monoespaçados em tabelas (alinha colunas) */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Text-gradient âmbar — usado em palavras de destaque nos títulos
+     (ex: "Picks" em "Hot Picks"). Mesma vibe do "ler o jogo" do landing.
+     Funciona em qualquer cor de fundo pq o gradient é independente. */
+  .text-gradient-amber {
+    background: linear-gradient(135deg, #fb923c 0%, #f59e0b 50%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
