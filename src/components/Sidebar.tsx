@@ -42,6 +42,10 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
   },
   {
+    to: '/props', label: 'Props',
+    icon: ic(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" opacity="0.5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></>),
+  },
+  {
     to: '/entradas', label: 'Entradas ao Vivo',
     icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
   },
@@ -50,20 +54,8 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><path d="M3 3v18h18" /><path d="m7 14 3-4 3 3 5-6" /></>),
   },
   {
-    to: '/ligas', label: 'Ligas',
-    icon: ic(<><path d="M6 3h12v4a6 6 0 0 1-12 0V3Z" /><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3" opacity="0.6" /><path d="M9 14h6l-1 4h-4l-1-4Z" /></>),
-  },
-  {
-    to: '/times', label: 'Times',
-    icon: ic(<><path d="M4 7l8-4 8 4-8 4-8-4Z" /><path d="M4 7v6l8 4 8-4V7" opacity="0.55" /></>),
-  },
-  {
     to: '/jogadores', label: 'Jogadores',
     icon: ic(<><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6" opacity="0.5" /></>),
-  },
-  {
-    to: '/odds', label: 'Odds',
-    icon: ic(<><path d="M4 19V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13" /><path d="M8 16l3-3 2 2 3-4" /></>),
   },
   {
     to: '/config', label: 'Configurações',
@@ -84,16 +76,12 @@ const WC_NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="9" /><path d="m12 7 2.5 1.8-1 3h-3l-1-3L12 7Z" /></>),
   },
   {
-    to: '/grupos', label: 'Grupos',
-    icon: ic(<><rect x="3" y="3" width="8" height="8" rx="1" /><rect x="13" y="3" width="8" height="8" rx="1" /><rect x="3" y="13" width="8" height="8" rx="1" /><rect x="13" y="13" width="8" height="8" rx="1" /></>),
-  },
-  {
-    to: '/mata-mata', label: 'Mata-mata',
-    icon: ic(<><path d="M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6" /><circle cx="6" cy="3" r="1.6" /><circle cx="18" cy="21" r="1.6" /></>),
-  },
-  {
     to: '/recomendacoes', label: 'Recomendações',
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
+  },
+  {
+    to: '/props', label: 'Props',
+    icon: ic(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" opacity="0.5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></>),
   },
   {
     to: '/entradas', label: 'Entradas ao Vivo',
@@ -102,10 +90,6 @@ const WC_NAV_ITEMS: NavItem[] = [
   {
     to: '/performance', label: 'Performance',
     icon: ic(<><path d="M3 3v18h18" /><path d="m7 14 3-4 3 3 5-6" /></>),
-  },
-  {
-    to: '/times', label: 'Seleções',
-    icon: ic(<><path d="M4 7l8-4 8 4-8 4-8-4Z" /><path d="M4 7v6l8 4 8-4V7" opacity="0.55" /></>),
   },
   {
     to: '/jogadores', label: 'Jogadores',

@@ -1,51 +1,61 @@
-// ─── MatchAnalysisPage — análise detalhada de uma partida ────────────────────
-// Header com mandante x visitante, comparativo de estatísticas (forma, gols,
-// xG/xGA), desfalques, escalação provável, recomendação do modelo e comparação
-// de odds. Cada bloco degrada quando o backend não fornece o dado.
+// ─── MatchAnalysisPage — a tela-mãe do produto (betting analytics) ───────────
+// Blocos: resumo · probabilidades+edge · recomendação do modelo · props de
+// jogadores · mercados (odd/justa/edge) · estatísticas dos times · (desfalques).
 
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../services/api'
-import type { FootballMatch, MatchOdds, MatchStatistics } from '../types'
+import type {
+  FootballMatch, FootballRecommendation, MarketLine, MatchStatistics,
+} from '../types'
 import TeamStatsCard from '../components/TeamStatsCard'
 import TeamBadge from '../components/TeamBadge'
 import RecommendationCard from '../components/RecommendationCard'
-import OddsComparisonTable from '../components/OddsComparisonTable'
 import { SectionCard, SectionEmpty, Pill } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/States'
+import { marketLabel } from '../lib/markets'
+import { formatPct, formatOdd, formatEdge } from '../lib/odds'
 import { statusMeta, scoreline, hasScore, formatKickoffTime, formatKickoffDate } from '../lib/match'
+
+const EDGE_TONE: Record<string, string> = {
+  accent: 'text-accent-400', red: 'text-red-400', neutral: 'text-zinc-500',
+}
+const SEL_LABEL: Record<string, string> = {
+  home: 'Casa', draw: 'Empate', away: 'Fora', over: 'Over', under: 'Under',
+  yes: 'Sim', no: 'Não', home_draw: '1X', home_away: '12', draw_away: 'X2',
+}
+const sel = (s: string) => SEL_LABEL[s] ?? s
 
 export default function MatchAnalysisPage() {
   const { id } = useParams<{ id: string }>()
   const [match, setMatch] = useState<FootballMatch | null>(null)
   const [stats, setStats] = useState<MatchStatistics | null>(null)
-  const [odds, setOdds] = useState<MatchOdds | null>(null)
+  const [markets, setMarkets] = useState<MarketLine[]>([])
+  const [props, setProps] = useState<FootballRecommendation[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
     if (!id) return
     let cancelled = false
-    setLoading(true)
-    setError(false)
+    setLoading(true); setError(false)
     const run = async () => {
       try {
-        const matchR = await api.getMatch(id)
+        const m = await api.getMatch(id)
         if (cancelled) return
-        setMatch(matchR.data)
+        setMatch(m.data)
       } catch {
-        if (!cancelled) setError(true)
-        if (!cancelled) setLoading(false)
+        if (!cancelled) { setError(true); setLoading(false) }
         return
       }
-      const [statsR, oddsR] = await Promise.allSettled([
-        api.getMatchStatistics(id),
-        api.getMatchOdds(id),
+      const [s, mk, pr] = await Promise.allSettled([
+        api.getMatchStatistics(id), api.getMatchMarkets(id), api.getMatchProps(id),
       ])
       if (cancelled) return
-      setStats(statsR.status === 'fulfilled' ? statsR.value.data : null)
-      setOdds(oddsR.status === 'fulfilled' ? oddsR.value.data : null)
+      setStats(s.status === 'fulfilled' ? s.value.data : null)
+      setMarkets(mk.status === 'fulfilled' ? mk.value.data : [])
+      setProps(pr.status === 'fulfilled' ? pr.value.data : [])
       setLoading(false)
     }
     run()
@@ -56,36 +66,34 @@ export default function MatchAnalysisPage() {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
         <Skeleton className="h-28 rounded-2xl" />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Skeleton className="h-40 rounded-2xl" />
-          <Skeleton className="h-40 rounded-2xl" />
-        </div>
+        <Skeleton className="h-32 rounded-2xl" />
+        <Skeleton className="h-48 rounded-2xl" />
       </div>
     )
   }
-
   if (error || !match) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-        <ErrorState
-          title="Não foi possível carregar a partida"
-          description={<>O jogo pode não existir mais. <Link to="/jogos" className="text-brand-300 underline">Voltar para jogos</Link>.</>}
-        />
+        <ErrorState title="Não foi possível carregar a partida"
+          description={<>O jogo pode não existir mais. <Link to="/jogos" className="text-brand-300 underline">Voltar para jogos</Link>.</>} />
       </div>
     )
   }
 
   const st = statusMeta(match.status, match.minute)
-  const recommendation = stats?.recommendation ?? null
-  const injuries = stats?.injuries ?? []
+  const oneXtwo = markets.filter(m => m.market === '1x2')
+  const goalMarkets = markets.filter(m => m.market === 'over_under')
+  const otherMarkets = markets.filter(m => !['1x2', 'over_under'].includes(m.market))
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Header */}
+      {/* 1 · Resumo */}
       <div className="card-premium p-5 sm:p-6">
         <div className="flex items-center justify-between gap-2 mb-4">
           <span className="text-[12px] font-semibold text-zinc-500">
-            {match.league_name ?? 'Liga'}{match.country ? ` · ${match.country}` : ''}
+            {match.league_name ?? 'Liga'}
+            {match.stage ? ` · ${match.stage}` : ''}
+            {match.venue ? ` · ${match.venue}` : ''}
           </span>
           <Pill tone={st.tone}>
             {st.live && <span className="inline-block w-1.5 h-1.5 rounded-full bg-current animate-pulse-subtle" />}
@@ -114,7 +122,60 @@ export default function MatchAnalysisPage() {
         </div>
       </div>
 
-      {/* Comparativo de estatísticas */}
+      {/* 2 · Probabilidades (1X2) */}
+      {oneXtwo.length > 0 && (
+        <SectionCard title="Probabilidades · 1X2" icon="🎯">
+          <div className="grid grid-cols-3 gap-3">
+            {oneXtwo.map(m => {
+              const e = formatEdge(m.edge ?? null)
+              return (
+                <div key={m.selection} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                    {m.selection === 'home' ? match.home.short_name ?? 'Casa'
+                      : m.selection === 'away' ? match.away.short_name ?? 'Fora' : 'Empate'}
+                  </div>
+                  <div className="text-2xl font-extrabold text-white tabular leading-tight my-1">{formatPct(m.model_prob)}</div>
+                  <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500">
+                    <span>odd <b className="text-zinc-300">{formatOdd(m.odd)}</b></span>
+                    <span>justa <b className="text-zinc-300">{formatOdd(m.fair_odd)}</b></span>
+                  </div>
+                  {m.edge != null && <div className={`mt-1 text-[12px] font-bold ${EDGE_TONE[e.tone]}`}>{e.text}</div>}
+                </div>
+              )
+            })}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* 3 · Recomendação do modelo */}
+      {stats?.recommendation && (
+        <SectionCard title="Recomendação do modelo" icon="⚡">
+          <RecommendationCard rec={stats.recommendation} />
+          {stats.model_note && <p className="mt-3 text-[13px] text-zinc-400 leading-relaxed">{stats.model_note}</p>}
+        </SectionCard>
+      )}
+
+      {/* 4 · Props de jogadores */}
+      <SectionCard title="Props de jogadores" icon="🎽"
+        subtitle="Projeção do modelo ajustada pela força do adversário.">
+        {props.length === 0 ? (
+          <SectionEmpty icon="🎽" text="Sem props com confiança suficiente para este jogo." />
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {props.map((p, i) => <PropCard key={i} prop={p} />)}
+          </div>
+        )}
+      </SectionCard>
+
+      {/* 5 · Mercados */}
+      {(goalMarkets.length > 0 || otherMarkets.length > 0) && (
+        <SectionCard title="Mercados" icon="📈"
+          subtitle="Probabilidade do modelo × odd da casa = edge.">
+          <MarketTable rows={[...goalMarkets, ...otherMarkets]} />
+        </SectionCard>
+      )}
+
+      {/* 6 · Estatísticas dos times */}
       <SectionCard title="Forma e estatísticas" icon="📊">
         {stats ? (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -122,80 +183,70 @@ export default function MatchAnalysisPage() {
             <TeamStatsCard stats={stats.away} />
           </div>
         ) : (
-          <SectionEmpty icon="📊" text="Estatísticas detalhadas indisponíveis para esta partida." />
-        )}
-      </SectionCard>
-
-      {/* Recomendação do modelo */}
-      {recommendation && (
-        <SectionCard title="Recomendação do modelo" icon="⚡">
-          <RecommendationCard rec={recommendation} />
-          {stats?.model_note && (
-            <p className="mt-3 text-[13px] text-zinc-400 leading-relaxed">{stats.model_note}</p>
-          )}
-        </SectionCard>
-      )}
-
-      {/* Desfalques + escalação provável */}
-      {(injuries.length > 0 || stats?.probable_lineup_home?.length || stats?.probable_lineup_away?.length) && (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <SectionCard title="Desfalques" icon="🚑">
-            {injuries.length === 0 ? (
-              <SectionEmpty icon="✅" text="Nenhum desfalque reportado." />
-            ) : (
-              <ul className="space-y-2">
-                {injuries.map((inj, i) => (
-                  <li key={i} className="flex items-center justify-between gap-2 text-[13px]">
-                    <span className="text-zinc-200 font-semibold truncate">
-                      {inj.player_name}
-                      <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-zinc-600">
-                        {inj.team_side === 'home' ? match.home.short_name ?? 'Casa' : match.away.short_name ?? 'Fora'}
-                      </span>
-                    </span>
-                    <span className="text-zinc-500 text-[12px] truncate">{inj.reason ?? inj.status ?? '—'}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </SectionCard>
-
-          <SectionCard title="Escalação provável" icon="📋">
-            <div className="grid grid-cols-2 gap-4">
-              <LineupColumn title={match.home.short_name ?? 'Mandante'} slots={stats?.probable_lineup_home} />
-              <LineupColumn title={match.away.short_name ?? 'Visitante'} slots={stats?.probable_lineup_away} />
-            </div>
-          </SectionCard>
-        </div>
-      )}
-
-      {/* Odds */}
-      <SectionCard title="Odds" icon="💱">
-        {odds && odds.entries.length > 0 ? (
-          <OddsComparisonTable entries={odds.entries} />
-        ) : (
-          <SectionEmpty icon="💱" text="Odds indisponíveis para esta partida." />
+          <SectionEmpty icon="📊" text="Estatísticas indisponíveis para esta partida." />
         )}
       </SectionCard>
     </div>
   )
 }
 
-function LineupColumn({ title, slots }: { title: string; slots?: { player_name: string; number?: number | null }[] }) {
+function PropCard({ prop }: { prop: FootballRecommendation }) {
   return (
-    <div>
-      <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 mb-2">{title}</div>
-      {!slots || slots.length === 0 ? (
-        <div className="text-[12px] text-zinc-600">—</div>
-      ) : (
-        <ul className="space-y-1">
-          {slots.map((s, i) => (
-            <li key={i} className="text-[12px] text-zinc-300 truncate">
-              {s.number != null && <span className="text-zinc-600 tabular mr-1.5">{s.number}</span>}
-              {s.player_name}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 flex flex-col gap-2">
+      <div className="text-[13px] font-bold text-white leading-snug">{prop.selection}</div>
+      <div className="grid grid-cols-3 gap-1.5 text-center">
+        <Mini label="Prob." value={formatPct(prop.model_prob)} strong />
+        <Mini label="Odd justa" value={formatOdd(prop.fair_odd)} />
+        <Mini label="Conf." value={(prop.confidence as string) ?? '—'} />
+      </div>
+      {prop.reason && <p className="text-[11px] text-zinc-500 leading-relaxed">{prop.reason}</p>}
+    </div>
+  )
+}
+
+function Mini({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-1.5 py-1">
+      <div className="text-[8px] font-bold uppercase tracking-wider text-zinc-600">{label}</div>
+      <div className={`text-[12px] font-extrabold tabular ${strong ? 'text-brand-200' : 'text-zinc-200'}`}>{value}</div>
+    </div>
+  )
+}
+
+function MarketTable({ rows }: { rows: MarketLine[] }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-[12px]">
+        <thead>
+          <tr className="text-zinc-500 text-[10px] uppercase tracking-wider">
+            <th className="text-left font-semibold py-2">Mercado</th>
+            <th className="text-left font-semibold py-2">Seleção</th>
+            <th className="text-center font-semibold py-2">Modelo</th>
+            <th className="text-center font-semibold py-2">Odd</th>
+            <th className="text-center font-semibold py-2">Justa</th>
+            <th className="text-right font-semibold py-2 pr-1">Edge</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((m, i) => {
+            const e = formatEdge(m.edge ?? null)
+            return (
+              <tr key={i} className="border-t border-white/[0.04]">
+                <td className="py-2 text-zinc-400">{marketLabel(m.market)}</td>
+                <td className="py-2 text-zinc-200 font-semibold">
+                  {sel(m.selection)}{m.line != null ? ` ${m.line}` : ''}
+                </td>
+                <td className="py-2 text-center text-white font-bold tabular">{formatPct(m.model_prob)}</td>
+                <td className="py-2 text-center text-zinc-300 tabular">{formatOdd(m.odd)}</td>
+                <td className="py-2 text-center text-zinc-300 tabular">{formatOdd(m.fair_odd)}</td>
+                <td className={`py-2 text-right pr-1 font-bold tabular ${EDGE_TONE[e.tone]}`}>
+                  {m.edge != null ? e.text : '—'}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </div>
   )
 }

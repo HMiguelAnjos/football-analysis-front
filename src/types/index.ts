@@ -125,6 +125,7 @@ export interface FootballPlayer {
   team?: string | null
   team_id?: number | string | null
   position?: string | null
+  appearances?: number
   goals?: number
   assists?: number
   xg?: number | null
@@ -136,6 +137,25 @@ export interface FootballPlayer {
   red_cards?: number
   /** Status provável pro próximo jogo: ex. "available" | "doubtful" | "out". */
   status?: string | null
+  // ── Parâmetros analíticos extra (api-football) ──────────────────────────
+  rating?: number | null
+  key_passes?: number
+  passes?: number
+  pass_accuracy?: number | null
+  dribbles?: number
+  dribbles_attempts?: number
+  tackles?: number
+  interceptions?: number
+  duels?: number
+  duels_won?: number
+  fouls_drawn?: number
+  fouls_committed?: number
+  penalty_scored?: number
+  // Índices compostos (0–100)
+  ipo?: number | null
+  icj?: number | null
+  idef?: number | null
+  iip?: number | null
 }
 
 // ─── Odds principais embutidas no card do jogo ───────────────────────────────
@@ -295,6 +315,18 @@ export interface MatchOdds {
   entries: OddsEntry[]
 }
 
+/** Linha de mercado com prob. do modelo + valor (odd justa, edge). */
+export interface MarketLine {
+  market: FootballMarket
+  selection: string
+  line?: number | null
+  model_prob: number
+  fair_odd: number
+  odd?: number | null
+  edge?: number | null
+  confidence?: number | null
+}
+
 export interface OddsBoardItem {
   match: MatchSummary
   best: OddsEntry
@@ -328,6 +360,15 @@ export interface FootballRecommendation {
   bookmaker?: string | null
   created_by_name?: string | null
   created_at: string
+  /** Contexto + torneio. */
+  context?: string
+  stage?: string | null
+  group?: string | null
+  /** Kickoff do jogo (ISO) — agrupar/ordenar por jogo. */
+  kickoff?: string | null
+  /** Props de jogador: time do jogador + número da camisa. */
+  team?: string | null
+  player_number?: number | null
 }
 
 // ─── Entradas ao vivo (publicadas por analistas) ─────────────────────────────

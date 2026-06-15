@@ -1,10 +1,12 @@
+/* Inter = fonte da UI (mesma do mockup de referência — grotesk neutra,
+   ótima leitura em dashboard denso). Raleway/Sora ficam como fallback.
+   IMPORTANTE: @import precisa vir ANTES de tudo (regra do CSS) — senão o
+   Vite avisa "@import must precede all other statements". */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Raleway:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Inter = fonte da UI (mesma do mockup de referência — grotesk neutra,
-   ótima leitura em dashboard denso). Raleway/Sora ficam como fallback. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Raleway:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap');
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 :root {

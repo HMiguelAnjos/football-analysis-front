@@ -33,17 +33,16 @@ export default function RecommendationsPage() {
 
   const load = useCallback(async () => {
     try {
-      const r = await api.getRecommendations({
-        league_id: leagueId || undefined,
-        market: market || undefined,
-      })
-      setRecs(r.data)
+      // Oportunidades de VALOR ao vivo (modelo × odd real), ordenadas por edge.
+      const r = await api.getOpportunities({ limit: 60 })
+      const data = market ? r.data.filter(x => x.market === market) : r.data
+      setRecs(data)
       setError(false)
     } catch {
       setError(true)
       setRecs([])
     }
-  }, [leagueId, market])
+  }, [market])
 
   useEffect(() => {
     setRecs(null)

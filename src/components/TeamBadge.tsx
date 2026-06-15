@@ -1,14 +1,19 @@
+import { useEffect, useState } from 'react'
 import type { FootballTeamRef } from '../types'
+import { flagUrl } from '../lib/flags'
 
 // ─── Escudo/identidade do time ───────────────────────────────────────────────
-// Mostra o logo (logo_url) quando disponível; senão cai pras iniciais num
-// disco neutro. Genérico — funciona pra qualquer liga.
+// Ordem: BANDEIRA da seleção (flagcdn) → logo_url do clube → iniciais. Se a
+// imagem falhar (CDN fora do ar, URL inválida), cai GRACIOSAMENTE pras iniciais
+// num disco neutro — nunca o ícone de imagem quebrada.
 
 const SIZES = {
   sm: 'w-6 h-6 text-[10px]',
   md: 'w-8 h-8 text-[12px]',
   lg: 'w-11 h-11 text-[15px]',
 }
+
+const FLAG_WIDTH = { sm: 40, md: 80, lg: 80 } as const
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -23,13 +28,20 @@ export default function TeamBadge({
   team: FootballTeamRef
   size?: keyof typeof SIZES
 }) {
-  if (team.logo_url) {
+  const [failed, setFailed] = useState(false)
+  // Bandeira da seleção quando existir; senão o logo do clube.
+  const src = flagUrl(team.name, FLAG_WIDTH[size]) || team.logo_url
+  // Reseta o estado de erro se a imagem mudar (ex.: troca de contexto).
+  useEffect(() => setFailed(false), [src])
+
+  if (src && !failed) {
     return (
       <img
-        src={team.logo_url}
+        src={src}
         alt={team.name}
         className={`${SIZES[size]} object-contain shrink-0`}
         loading="lazy"
+        onError={() => setFailed(true)}
       />
     )
   }

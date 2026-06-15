@@ -8,6 +8,7 @@ import type {
   MatchListResponse,
   MatchStatistics,
   MatchOdds,
+  MarketLine,
   OddsBoardItem,
   FootballRecommendation,
   FootballLivePick,
@@ -144,6 +145,10 @@ export const api = {
     client.get<MatchStatistics>(fb(`/matches/${id}/statistics`)),
   getMatchOdds: (id: number | string) =>
     client.get<MatchOdds>(fb(`/matches/${id}/odds`)),
+  getMatchMarkets: (id: number | string) =>
+    client.get<MarketLine[]>(fb(`/matches/${id}/markets`)),
+  getMatchProps: (id: number | string) =>
+    client.get<FootballRecommendation[]>(fb(`/matches/${id}/props`)),
 
   // ── Recomendações do modelo ────────────────────────────────────────────────
   getRecommendations: (filters?: RecommendationFilters) =>
@@ -154,6 +159,11 @@ export const api = {
     client.get<FootballRecommendation>(fb(`/recommendations/${id}`)),
   generateRecommendations: (body?: Record<string, unknown>) =>
     client.post<FootballRecommendation[]>(fb('/recommendations/generate'), body ?? {}),
+  getOpportunities: (params?: { limit?: number }) =>
+    client.get<FootballRecommendation[]>(fb('/recommendations/opportunities'), { params: clean(params) }),
+  // Feed global de player props (artilheiro, chutes no gol) dos próximos jogos.
+  getProps: (params?: { limit?: number }) =>
+    client.get<FootballRecommendation[]>(fb('/props'), { params: clean(params) }),
 
   // ── Entradas ao vivo (publicadas por analistas) ─────────────────────────────
   getLivePicks: () =>
@@ -180,6 +190,8 @@ export const api = {
     client.get<FootballPlayer[]>(fb('/players'), { params: clean(params) }),
   getPlayerLeaders: (params?: { metric?: string; limit?: number }) =>
     client.get<FootballPlayer[]>(fb('/players/leaders'), { params: clean(params) }),
+  getPlayerIndex: (params?: { index?: string; limit?: number }) =>
+    client.get<FootballPlayer[]>(fb('/players/index'), { params: clean(params) }),
   getPlayer: (id: number | string) =>
     client.get<FootballPlayer>(fb('/players/' + id)),
   getOdds: (params?: { league_id?: number | string; market?: string }) =>

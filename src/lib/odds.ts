@@ -59,7 +59,11 @@ export function confidenceMeta(c?: string | null) {
 
 /** "há 5 min" / "há 2h" / data. Usado em cards de entrada. */
 export function timeAgo(iso: string): string {
-  const ms = Date.now() - new Date(iso).getTime()
+  // Recomendações geradas na hora (oportunidades/props) vêm sem data → "agora".
+  if (!iso) return 'agora'
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return 'agora'
+  const ms = Date.now() - t
   const min = Math.floor(ms / 60_000)
   if (min < 1) return 'agora'
   if (min < 60) return `há ${min} min`

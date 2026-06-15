@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import MatchesPage from './pages/MatchesPage'
 import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
+import PropsPage from './pages/PropsPage'
 import LivePicksPage from './pages/LivePicksPage'
 import PublishPickPage from './pages/PublishPickPage'
 import PerformancePage from './pages/PerformancePage'
@@ -13,8 +14,6 @@ import LeaguesPage from './pages/LeaguesPage'
 import TeamsPage from './pages/TeamsPage'
 import PlayersPage from './pages/PlayersPage'
 import OddsPage from './pages/OddsPage'
-import GroupsPage from './pages/GroupsPage'
-import BracketPage from './pages/BracketPage'
 import SettingsPage from './pages/SettingsPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 import AuthPage from './pages/AuthPage'
@@ -59,15 +58,16 @@ function AppShell() {
             <Route path="/jogos" element={<MatchesPage />} />
             <Route path="/jogos/:id" element={<MatchAnalysisPage />} />
             <Route path="/recomendacoes" element={<RecommendationsPage />} />
+            <Route path="/props" element={<PropsPage />} />
             <Route path="/entradas" element={<LivePicksPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/ligas" element={<LeaguesPage />} />
             <Route path="/times" element={<TeamsPage />} />
             <Route path="/jogadores" element={<PlayersPage />} />
             <Route path="/odds" element={<OddsPage />} />
-            {/* Telas exclusivas da Copa do Mundo */}
-            <Route path="/grupos" element={<GroupsPage />} />
-            <Route path="/mata-mata" element={<BracketPage />} />
+            {/* Telas institucionais aposentadas → redireciona pro foco em aposta */}
+            <Route path="/grupos" element={<Navigate to="/" replace />} />
+            <Route path="/mata-mata" element={<Navigate to="/" replace />} />
             <Route path="/config" element={<SettingsPage />} />
 
             {/* Área de analista/admin — gate por permissão (+ 403 no back). */}
