@@ -16,28 +16,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── Brand book ClutchPro (mai/2026) ──────────────────────────
-        // Laranja primária #FF6A00 (mais forte/saturada que o antigo
-        // #f97316). Escala calibrada pra contraste em dark #111.
+        // ── Identidade Football (jun/2026) ───────────────────────────
+        // VERDE primário (escudo do logo) — qualquer `bg-brand-500` vira
+        // verde (CTA, nav ativo, focus ring). Escala calibrada pra dark #111.
         brand: {
-          50:  '#fff3e8',
-          100: '#ffe1c7',
-          200: '#ffc596',
-          300: '#ffa563',
-          400: '#ff8a3d',  // hover/active text
-          500: '#ff6a00',  // brand primário (CTA, nav ativo, focus ring)
-          600: '#e25c00',  // hover/pressed
-          700: '#b84a00',
-          800: '#8f3a00',
-          900: '#6b2c00',
-          950: '#3d1900',
+          50:  '#e9fcec',
+          100: '#c7f7d0',
+          200: '#90eea3',
+          300: '#52df73',
+          400: '#2ecb53',  // hover/active text
+          500: '#16a92f',  // brand primário (verde grama do logo)
+          600: '#108a26',  // hover/pressed
+          700: '#0d6d1f',
+          800: '#0b5519',
+          900: '#073c12',
+          950: '#03200a',
         },
-        // Verde de performance #22C55E (= edge positivo / OVER / lucro).
+        // DOURADO/amarelo da seta do logo — destaques premium (valor forte,
+        // badges, linhas). Substitui o âmbar antigo.
         accent: {
-          400: '#4ade80',
-          500: '#22c55e',  // verde do brand book
-          600: '#16a34a',
-          700: '#15803d',
+          400: '#ffcb3d',
+          500: '#f5b000',  // dourado da seta
+          600: '#d99400',
+          700: '#a86f00',
         },
         // Superfícies dark do brand book (#111111 / #2A2A2A). Usado na
         // nova casca (sidebar/topbar/cards). Páginas legadas ainda usam
@@ -55,11 +56,11 @@ export default {
       fontFamily: {
         sans: ['Raleway', 'Inter', 'system-ui', 'sans-serif'],
       },
-      // Sombras "premium" — glow LARANJA #FF6A00 (brand book).
+      // Sombras "premium" — glow VERDE (escudo do logo).
       boxShadow: {
         'soft':   '0 1px 2px 0 rgb(0 0 0 / 0.40), 0 1px 3px 0 rgb(0 0 0 / 0.25)',
         'raised': '0 4px 12px -2px rgb(0 0 0 / 0.50), 0 2px 4px -2px rgb(0 0 0 / 0.35)',
-        'glow':   '0 0 0 1px rgb(255 106 0 / 0.35), 0 0 24px -4px rgb(255 106 0 / 0.30)',
+        'glow':   '0 0 0 1px rgb(22 169 47 / 0.35), 0 0 24px -4px rgb(22 169 47 / 0.30)',
       },
       animation: {
         'fade-in':       'fadeIn 200ms ease-out',
