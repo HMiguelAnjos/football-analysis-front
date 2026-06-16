@@ -12,22 +12,28 @@ import { InlineError } from '../components/States'
 
 const REFRESH_MS = 30_000
 
+type Tab = 'mercados' | 'chutes'
+
 export default function LivePage() {
+  const [tab, setTab] = useState<Tab>('chutes')
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
   const [error, setError] = useState(false)
 
   const load = useCallback(async () => {
     try {
-      const r = await api.getLiveOpportunities({ limit: 40 })
+      const r = tab === 'chutes'
+        ? await api.getLiveShots({ limit: 50 })
+        : await api.getLiveOpportunities({ limit: 40 })
       setRecs(r.data)
       setError(false)
     } catch {
       setError(true)
       setRecs([])
     }
-  }, [])
+  }, [tab])
 
   useEffect(() => {
+    setRecs(null)
     load()
     const id = setInterval(load, REFRESH_MS)
     return () => clearInterval(id)
@@ -42,8 +48,9 @@ export default function LivePage() {
             Ao Vivo
           </h1>
           <p className="text-[13px] text-zinc-500">
-            Valor recalculado pelo placar e minuto de cada jogo em andamento.
-            Atualiza sozinho a cada 30s.
+            {tab === 'chutes'
+              ? 'Jogadores mais prováveis de chutar no gol agora — taxa + ritmo + pressão. Atualiza a cada 30s.'
+              : 'Valor recalculado pelo placar e minuto de cada jogo. Atualiza a cada 30s.'}
           </p>
         </div>
         <button
@@ -52,6 +59,21 @@ export default function LivePage() {
         >
           ↻ Atualizar
         </button>
+      </div>
+
+      {/* Toggle: chutes a gol ↔ mercados */}
+      <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
+        {([['chutes', 'Chutes a Gol'], ['mercados', 'Mercados']] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-md transition-colors ${
+              tab === id ? 'bg-brand-500/20 text-brand-300' : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       {error && (

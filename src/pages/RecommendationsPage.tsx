@@ -13,11 +13,14 @@ import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
 import { useCompetition } from '../hooks/useCompetition'
+import PropsPage from './PropsPage'
 
 type View = 'cards' | 'table'
+type Tab = 'mercados' | 'jogadores'
 
 export default function RecommendationsPage() {
   const { isWorldCup } = useCompetition()
+  const [tab, setTab] = useState<Tab>('mercados')
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
   const [leagues, setLeagues] = useState<FootballLeague[]>([])
   const [error, setError] = useState(false)
@@ -51,6 +54,25 @@ export default function RecommendationsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      {/* Toggle principal: mercados (seleção) ↔ jogadores (props) */}
+      <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
+        {([['mercados', 'Mercados'], ['jogadores', 'Jogadores']] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-md transition-colors ${
+              tab === id ? 'bg-brand-500/20 text-brand-300' : 'text-zinc-500 hover:text-zinc-300'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'jogadores' ? (
+        <PropsPage embedded />
+      ) : (
+        <>
       <div className="flex flex-wrap items-center gap-2.5">
         {!isWorldCup && (
           <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
@@ -99,6 +121,8 @@ export default function RecommendationsPage() {
         </div>
       ) : (
         <RecommendationTable recs={recs} />
+      )}
+        </>
       )}
     </div>
   )

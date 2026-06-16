@@ -42,24 +42,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
   },
   {
-    to: '/props', label: 'Props',
-    icon: ic(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" opacity="0.5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></>),
-  },
-  {
     to: '/ao-vivo', label: 'Ao Vivo',
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
   },
   {
-    to: '/chutes', label: 'Chutes a Gol',
-    icon: ic(<><circle cx="12" cy="12" r="9" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="2" fill="currentColor" /></>),
-  },
-  {
-    to: '/entradas', label: 'Entradas ao Vivo',
+    to: '/entradas', label: 'Entradas de Especialista',
     icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
-  },
-  {
-    to: '/performance', label: 'Performance',
-    icon: ic(<><path d="M3 3v18h18" /><path d="m7 14 3-4 3 3 5-6" /></>),
   },
   {
     to: '/jogadores', label: 'Jogadores',
@@ -88,24 +76,12 @@ const WC_NAV_ITEMS: NavItem[] = [
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
   },
   {
-    to: '/props', label: 'Props',
-    icon: ic(<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" opacity="0.5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></>),
-  },
-  {
     to: '/ao-vivo', label: 'Ao Vivo',
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
   },
   {
-    to: '/chutes', label: 'Chutes a Gol',
-    icon: ic(<><circle cx="12" cy="12" r="9" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="2" fill="currentColor" /></>),
-  },
-  {
-    to: '/entradas', label: 'Entradas ao Vivo',
+    to: '/entradas', label: 'Entradas de Especialista',
     icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
-  },
-  {
-    to: '/performance', label: 'Performance',
-    icon: ic(<><path d="M3 3v18h18" /><path d="m7 14 3-4 3 3 5-6" /></>),
   },
   {
     to: '/jogadores', label: 'Jogadores',

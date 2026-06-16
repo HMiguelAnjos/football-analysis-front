@@ -6,12 +6,9 @@ import DashboardPage from './pages/DashboardPage'
 import MatchesPage from './pages/MatchesPage'
 import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
-import PropsPage from './pages/PropsPage'
 import LivePage from './pages/LivePage'
-import LiveShotsPage from './pages/LiveShotsPage'
 import LivePicksPage from './pages/LivePicksPage'
 import PublishPickPage from './pages/PublishPickPage'
-import PerformancePage from './pages/PerformancePage'
 import LeaguesPage from './pages/LeaguesPage'
 import TeamsPage from './pages/TeamsPage'
 import PlayersPage from './pages/PlayersPage'
@@ -60,11 +57,11 @@ function AppShell() {
             <Route path="/jogos" element={<MatchesPage />} />
             <Route path="/jogos/:id" element={<MatchAnalysisPage />} />
             <Route path="/recomendacoes" element={<RecommendationsPage />} />
-            <Route path="/props" element={<PropsPage />} />
+            <Route path="/props" element={<Navigate to="/recomendacoes" replace />} />
             <Route path="/ao-vivo" element={<LivePage />} />
-            <Route path="/chutes" element={<LiveShotsPage />} />
+            <Route path="/chutes" element={<Navigate to="/ao-vivo" replace />} />
             <Route path="/entradas" element={<LivePicksPage />} />
-            <Route path="/performance" element={<PerformancePage />} />
+            <Route path="/performance" element={<Navigate to="/" replace />} />
             <Route path="/ligas" element={<LeaguesPage />} />
             <Route path="/times" element={<TeamsPage />} />
             <Route path="/jogadores" element={<PlayersPage />} />

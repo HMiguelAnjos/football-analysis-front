@@ -109,7 +109,7 @@ interface MatchGroup {
   picks: FootballRecommendation[]
 }
 
-export default function PropsPage() {
+export default function PropsPage({ embedded = false }: { embedded?: boolean } = {}) {
   const [props, setProps] = useState<FootballRecommendation[] | null>(null)
   const [error, setError] = useState(false)
   const [market, setMarket] = useState('')
@@ -162,14 +162,16 @@ export default function PropsPage() {
   }, [props])
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-      <div>
-        <h1 className="text-[20px] font-extrabold text-white">Player Props</h1>
-        <p className="text-[13px] text-zinc-500">
-          Recomendações por jogador (artilheiro, chutes no gol) organizadas por jogo —
-          taxa do jogador na temporada × força do adversário.
-        </p>
-      </div>
+    <div className={embedded ? 'space-y-5' : 'max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5'}>
+      {!embedded && (
+        <div>
+          <h1 className="text-[20px] font-extrabold text-white">Player Props</h1>
+          <p className="text-[13px] text-zinc-500">
+            Recomendações por jogador (artilheiro, chutes no gol) organizadas por jogo —
+            taxa do jogador na temporada × força do adversário.
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2.5">
         <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08]">
