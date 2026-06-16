@@ -31,6 +31,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: str
 
 export default function RecommendationCard({ rec }: { rec: FootballRecommendation }) {
   const conf = confidenceMeta(rec.confidence as string | null | undefined)
+  const hasOdds = rec.odd != null
   const edge = recommendationEdge(rec)
   const edgeFmt = formatEdge(edge)
   const implied = rec.implied_prob ?? impliedProb(rec.odd)
@@ -58,20 +59,32 @@ export default function RecommendationCard({ rec }: { rec: FootballRecommendatio
         </span>
         <div className="min-w-0">
           <div className="text-[13px] font-semibold text-zinc-200">{marketLabel(rec.market)}</div>
-          <div className="text-[11px] text-zinc-500">
-            odd <span className="text-zinc-300 font-bold tabular">{formatOdd(rec.odd)}</span>
-            {rec.bookmaker ? ` · ${rec.bookmaker}` : ''}
-          </div>
+          {hasOdds && (
+            <div className="text-[11px] text-zinc-500">
+              odd <span className="text-zinc-300 font-bold tabular">{formatOdd(rec.odd)}</span>
+              {rec.bookmaker ? ` · ${rec.bookmaker}` : ''}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Probabilidades / edge */}
-      <div className="grid grid-cols-4 gap-1.5">
-        <Stat label="Prob. modelo" value={formatPct(rec.model_prob)} />
-        <Stat label="Prob. impl." value={formatPct(implied)} />
-        <Stat label="Odd justa" value={formatOdd(rec.fair_odd)} />
-        <Stat label="Edge" value={edgeFmt.text} tone={EDGE_TONE[edgeFmt.tone]} />
-      </div>
+      {hasOdds ? (
+        /* Modo VALOR (com odds): probabilidades + edge */
+        <div className="grid grid-cols-4 gap-1.5">
+          <Stat label="Prob. modelo" value={formatPct(rec.model_prob)} />
+          <Stat label="Prob. impl." value={formatPct(implied)} />
+          <Stat label="Odd justa" value={formatOdd(rec.fair_odd)} />
+          <Stat label="Edge" value={edgeFmt.text} tone={EDGE_TONE[edgeFmt.tone]} />
+        </div>
+      ) : (
+        /* Modo PREVISÃO (sem odds): chance de acontecer em destaque */
+        <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2">
+          <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-600">Chance de acontecer</div>
+          <div className="text-[22px] font-extrabold tabular text-accent-400 leading-none mt-0.5">
+            {formatPct(rec.model_prob)}
+          </div>
+        </div>
+      )}
 
       {/* Motivo */}
       {rec.reason && (
