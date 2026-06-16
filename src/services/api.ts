@@ -167,6 +167,9 @@ export const api = {
   // Picks de valor AO VIVO (modelo in-play × odd ao vivo).
   getLiveOpportunities: (params?: { limit?: number }) =>
     client.get<FootballRecommendation[]>(fb('/live-opportunities'), { params: clean(params) }),
+  // Especialista em CHUTES A GOL ao vivo (jogadores prováveis de chutar mais).
+  getLiveShots: (params?: { limit?: number }) =>
+    client.get<FootballRecommendation[]>(fb('/live-shots'), { params: clean(params) }),
 
   // ── Entradas ao vivo (publicadas por analistas) ─────────────────────────────
   getLivePicks: () =>

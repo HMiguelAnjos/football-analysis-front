@@ -8,6 +8,7 @@ import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import PropsPage from './pages/PropsPage'
 import LivePage from './pages/LivePage'
+import LiveShotsPage from './pages/LiveShotsPage'
 import LivePicksPage from './pages/LivePicksPage'
 import PublishPickPage from './pages/PublishPickPage'
 import PerformancePage from './pages/PerformancePage'
@@ -61,6 +62,7 @@ function AppShell() {
             <Route path="/recomendacoes" element={<RecommendationsPage />} />
             <Route path="/props" element={<PropsPage />} />
             <Route path="/ao-vivo" element={<LivePage />} />
+            <Route path="/chutes" element={<LiveShotsPage />} />
             <Route path="/entradas" element={<LivePicksPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/ligas" element={<LeaguesPage />} />

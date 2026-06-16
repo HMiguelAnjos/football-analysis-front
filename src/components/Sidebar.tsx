@@ -50,6 +50,10 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
   },
   {
+    to: '/chutes', label: 'Chutes a Gol',
+    icon: ic(<><circle cx="12" cy="12" r="9" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="2" fill="currentColor" /></>),
+  },
+  {
     to: '/entradas', label: 'Entradas ao Vivo',
     icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
   },
@@ -90,6 +94,10 @@ const WC_NAV_ITEMS: NavItem[] = [
   {
     to: '/ao-vivo', label: 'Ao Vivo',
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
+  },
+  {
+    to: '/chutes', label: 'Chutes a Gol',
+    icon: ic(<><circle cx="12" cy="12" r="9" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="2" fill="currentColor" /></>),
   },
   {
     to: '/entradas', label: 'Entradas ao Vivo',
