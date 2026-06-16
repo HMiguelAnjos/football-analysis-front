@@ -7,6 +7,7 @@ import MatchesPage from './pages/MatchesPage'
 import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import PropsPage from './pages/PropsPage'
+import LivePage from './pages/LivePage'
 import LivePicksPage from './pages/LivePicksPage'
 import PublishPickPage from './pages/PublishPickPage'
 import PerformancePage from './pages/PerformancePage'
@@ -59,6 +60,7 @@ function AppShell() {
             <Route path="/jogos/:id" element={<MatchAnalysisPage />} />
             <Route path="/recomendacoes" element={<RecommendationsPage />} />
             <Route path="/props" element={<PropsPage />} />
+            <Route path="/ao-vivo" element={<LivePage />} />
             <Route path="/entradas" element={<LivePicksPage />} />
             <Route path="/performance" element={<PerformancePage />} />
             <Route path="/ligas" element={<LeaguesPage />} />
@@ -92,8 +94,7 @@ function AppShell() {
             <Route path="/picks" element={<Navigate to="/recomendacoes" replace />} />
             <Route path="/recomendar" element={<Navigate to="/publicar" replace />} />
             <Route path="/admin" element={<Navigate to="/usuarios" replace />} />
-            <Route path="/live" element={<Navigate to="/entradas" replace />} />
-            <Route path="/ao-vivo" element={<Navigate to="/entradas" replace />} />
+            <Route path="/live" element={<Navigate to="/ao-vivo" replace />} />
 
             {/* Logado tentando rotas públicas de auth → manda pro app. */}
             <Route path="/login" element={<Navigate to="/" replace />} />
