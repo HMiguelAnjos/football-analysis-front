@@ -371,6 +371,34 @@ export interface FootballRecommendation {
   player_number?: number | null
 }
 
+// ─── Recomendações AO VIVO (in-play, foco escanteios) ────────────────────────
+export interface LiveReco {
+  id: number
+  context?: string
+  match_id: number
+  league?: string | null
+  home_team: string
+  away_team: string
+  minute?: number | null
+  home_score?: number | null
+  away_score?: number | null
+  /** corners_over | team_corners_over | next_corner | shots_on_target | goal_pressure | avoid_entry */
+  type: string
+  market: string
+  line?: number | null
+  odd?: number | null
+  /** 0-10 */
+  confidence: number
+  recommendation: string
+  reason: string
+  stats_used?: Record<string, number | string> | null
+  status: string
+  /** pending | green | red | void */
+  result: string
+  created_at: string
+  updated_at?: string | null
+}
+
 // ─── Entradas ao vivo (publicadas por analistas) ─────────────────────────────
 export interface FootballLivePick {
   id: number | string

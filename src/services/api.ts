@@ -14,6 +14,7 @@ import type {
   FootballLivePick,
   FootballLivePickCreate,
   FootballLivePickUpdate,
+  LiveReco,
   FootballPickResult,
   FootballPerformanceSummary,
   FootballLeague,
@@ -170,6 +171,15 @@ export const api = {
   // Especialista em CHUTES A GOL ao vivo (jogadores prováveis de chutar mais).
   getLiveShots: (params?: { limit?: number }) =>
     client.get<FootballRecommendation[]>(fb('/live-shots'), { params: clean(params) }),
+  // Recomendações AO VIVO persistidas (foco escanteios) — pendentes.
+  getLiveRecs: () =>
+    client.get<LiveReco[]>('/football/live-recommendations/pending', {
+      params: clean({ context: getContext() }),
+    }),
+  setLiveRecResult: (id: number | string, result: 'green' | 'red' | 'void' | 'pending') =>
+    client.patch<LiveReco>(`/football/live-recommendations/${id}/result`, null, {
+      params: { result },
+    }),
 
   // ── Entradas ao vivo (publicadas por analistas) ─────────────────────────────
   getLivePicks: () =>
