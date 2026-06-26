@@ -97,6 +97,10 @@ const ADMIN_NAV_ITEMS: (NavItem & { permission: Permission })[] = [
     icon: ic(<><path d="M12 5v14M5 12h14" /></>),
   },
   {
+    to: '/resultados-ao-vivo', label: 'Resultados ao Vivo', permission: 'publishPicks',
+    icon: ic(<><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>),
+  },
+  {
     to: '/usuarios', label: 'Usuários', permission: 'viewUsers',
     icon: ic(<><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 3.5a3 3 0 0 1 0 5.8M21 20a6 6 0 0 0-3.5-5.5" opacity="0.55" /></>),
   },

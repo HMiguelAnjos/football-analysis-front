@@ -7,6 +7,7 @@ import MatchesPage from './pages/MatchesPage'
 import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
 import LivePage from './pages/LivePage'
+import LiveResultsAdminPage from './pages/LiveResultsAdminPage'
 import LivePicksPage from './pages/LivePicksPage'
 import PublishPickPage from './pages/PublishPickPage'
 import LeaguesPage from './pages/LeaguesPage'
@@ -77,6 +78,14 @@ function AppShell() {
               element={
                 <PermissionRoute permission="publishPicks">
                   <PublishPickPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="/resultados-ao-vivo"
+              element={
+                <PermissionRoute permission="publishPicks">
+                  <LiveResultsAdminPage />
                 </PermissionRoute>
               }
             />
