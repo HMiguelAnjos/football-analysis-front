@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import type { AnalysisRecommendation } from '../types'
 import { marketLabel } from '../lib/markets'
+import { TeamFlags } from './cards/parts'
 
 const GRADE_CLS: Record<string, string> = {
   'A+': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
@@ -75,7 +76,7 @@ export default function AnalysisCard({ rec, hideMatch = false }: {
             {rec.selection}{lineTxt}
           </h3>
           {!hideMatch && (
-            <p className="text-[12px] text-zinc-500 truncate">{rec.match ?? '—'}</p>
+            <TeamFlags match={rec.match} className="text-[12px] text-zinc-400" />
           )}
         </div>
         <div className="shrink-0 text-right">

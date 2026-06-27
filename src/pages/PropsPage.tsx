@@ -9,10 +9,10 @@ import { api } from '../services/api'
 import type { FootballRecommendation } from '../types'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Pill } from '../components/dashboard/parts'
+import { Flag, Gauge, GradeBadge, gradeFromLabel } from '../components/cards/parts'
 import MatchHeader from '../components/MatchHeader'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
-import { confidenceMeta, formatPct } from '../lib/odds'
 
 // Rótulos PT-BR dos mercados de jogador (o backend manda o code name).
 const MARKET_LABEL: Record<string, string> = {
@@ -43,29 +43,27 @@ function strength(prob?: number | null): { label: string; tone: 'accent' | 'bran
 }
 
 function PropCard({ rec }: { rec: FootballRecommendation }) {
-  const conf = confidenceMeta(rec.confidence as string | null | undefined)
+  const meta = gradeFromLabel(rec.confidence as string | null | undefined)
   // A seleção vem como "Jogador — Mais de 0.5 chutes no gol"; separa nome do resto.
   const [player, ...rest] = rec.selection.split('—')
   const bet = rest.join('—').trim()
   const st = strength(rec.model_prob)
+  const pct = Math.round((rec.model_prob ?? 0) * 100)
 
   return (
     <article className="card-premium p-4 flex flex-col gap-2.5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="text-[14px] font-extrabold text-white truncate">
-            {rec.player_number != null && (
-              <span className="text-zinc-500 font-bold mr-1.5">#{rec.player_number}</span>
-            )}
-            {player.trim()}
-          </h3>
-          {rec.team && <p className="text-[11.5px] text-zinc-500 truncate">{rec.team}</p>}
+      <div className="flex items-center gap-3">
+        <span className="grid place-items-center w-10 h-10 rounded-full border border-white/[0.12] text-zinc-200 text-[14px] font-extrabold shrink-0">
+          {rec.player_number ?? '—'}
+        </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[14px] font-extrabold text-white truncate">{player.trim()}</h3>
+          <div className="flex items-center gap-1.5 text-[11.5px] text-zinc-500">
+            <Flag name={rec.team} />
+            <span className="truncate">{rec.team ?? ''}</span>
+          </div>
         </div>
-        {conf && (
-          <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${conf.cls}`}>
-            {conf.label}
-          </span>
-        )}
+        <GradeBadge meta={meta} />
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -73,14 +71,13 @@ function PropCard({ rec }: { rec: FootballRecommendation }) {
         {bet && <span className="text-[12.5px] font-semibold text-zinc-200">{bet}</span>}
       </div>
 
-      <div className="flex items-center justify-between rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2">
-        <div>
-          <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-600">Chance de acontecer</div>
-          <div className="text-[19px] font-extrabold tabular text-accent-400 leading-none mt-0.5">
-            {formatPct(rec.model_prob)}
-          </div>
+      <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="shrink-0">
+          <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">Chance de acontecer</div>
+          <div className={`text-[22px] font-extrabold tabular leading-none mt-0.5 ${meta.text}`}>{pct}%</div>
         </div>
-        <Pill tone={st.tone}>{st.label}</Pill>
+        <Gauge pct={pct} color={meta.bar} />
+        <div className="ml-auto"><Pill tone={st.tone}>{st.label}</Pill></div>
       </div>
 
       {rec.reason && (

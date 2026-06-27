@@ -1,9 +1,9 @@
-import type { LiveReco } from '../types'
-import { Pill } from './dashboard/parts'
+// ─── Card de recomendação AO VIVO (foco escanteios) — visual unificado ────────
+// Cabeçalho (jogo + bandeiras + AO VIVO + placar + resultado), entrada em
+// destaque, confiança (0-10) com medidor, motivo e tiles das stats usadas.
 
-// ─── Card de recomendação AO VIVO (foco escanteios) ──────────────────────────
-// Destaca tipo de entrada, mercado, confiança (0-10), minuto, motivo e o
-// resultado depois (green/red/void/pending).
+import type { LiveReco } from '../types'
+import { Gauge, GradeBadge, StatTile, TeamFlags, gradeFromPct, type Tile } from './cards/parts'
 
 const TYPE_LABEL: Record<string, string> = {
   corners_over: 'Over escanteios',
@@ -21,62 +21,64 @@ const RESULT_META: Record<string, { label: string; cls: string }> = {
   pending: { label: 'PENDENTE', cls: 'bg-amber-500/12 text-amber-300 border-amber-500/30' },
 }
 
-function confTone(c: number): 'accent' | 'brand' | 'neutral' {
-  if (c >= 8) return 'accent'
-  if (c >= 6) return 'brand'
-  return 'neutral'
-}
-
 export default function LiveRecoCard({ rec }: { rec: LiveReco }) {
   const res = RESULT_META[rec.result] ?? RESULT_META.pending
-  const stats = rec.stats_used ?? {}
+  const meta = gradeFromPct((rec.confidence ?? 0) * 10)
+  const tiles: Tile[] = Object.entries(rec.stats_used ?? {})
+    .slice(0, 6)
+    .map(([k, v]) => ({ label: k.replace(/_/g, ' '), value: String(v) }))
 
   return (
-    <article className="card-premium p-5 flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
+    <article className="card-premium p-4 flex flex-col gap-3">
+      {/* Cabeçalho */}
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="text-[15px] font-extrabold text-white truncate">
-            {rec.home_team} x {rec.away_team}
-          </h3>
-          <p className="text-[12px] text-zinc-500">
-            {rec.minute != null && (
-              <span className="text-red-400 font-bold">{rec.minute}' </span>
-            )}
-            {rec.home_score != null && `· ${rec.home_score}-${rec.away_score} `}
-            {rec.league ? `· ${rec.league}` : ''}
-          </p>
+          <TeamFlags match={`${rec.home_team} x ${rec.away_team}`} className="text-[14px] font-extrabold text-white" />
+          <p className="text-[11px] text-zinc-500">{rec.league ?? '—'}</p>
         </div>
-        <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${res.cls}`}>
-          {res.label}
-        </span>
-      </div>
-
-      <div className="flex items-center gap-2 flex-wrap">
-        <Pill tone="brand">{TYPE_LABEL[rec.type] ?? rec.type}</Pill>
-        <span className="text-[14px] font-extrabold text-zinc-100">{rec.market}</span>
-        {rec.odd != null && <span className="text-[12px] text-zinc-500">odd {rec.odd.toFixed(2)}</span>}
-      </div>
-
-      {/* Confiança 0-10 */}
-      <div className="flex items-center justify-between rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2">
-        <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-600">Confiança</div>
-        <Pill tone={confTone(rec.confidence)}>{rec.confidence.toFixed(1)} / 10</Pill>
-      </div>
-
-      {rec.reason && (
-        <p className="text-[13px] text-zinc-400 leading-relaxed border-l-2 border-brand-500/40 pl-3">
-          {rec.reason}
-        </p>
-      )}
-
-      {/* Estatísticas usadas (transparência) */}
-      {Object.keys(stats).length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {Object.entries(stats).slice(0, 6).map(([k, v]) => (
-            <span key={k} className="text-[10px] text-zinc-500 bg-white/[0.03] border border-white/[0.06] rounded px-1.5 py-0.5">
-              {k.replace(/_/g, ' ')}: <span className="text-zinc-300 font-semibold">{String(v)}</span>
+        <div className="shrink-0 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            {rec.minute != null ? `AO VIVO · ${rec.minute}'` : 'AO VIVO'}
+          </span>
+          {rec.home_score != null && (
+            <span className="px-1.5 py-0.5 rounded-md text-[11px] font-extrabold text-white bg-white/[0.06] border border-white/[0.08]">
+              {rec.home_score}-{rec.away_score}
             </span>
-          ))}
+          )}
+          <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${res.cls}`}>
+            {res.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Entrada em destaque */}
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider border bg-brand-500/15 text-brand-300 border-brand-500/30">
+            {TYPE_LABEL[rec.type] ?? rec.type}
+          </span>
+          <GradeBadge meta={meta} />
+          {rec.odd != null && <span className="ml-auto text-[11px] text-zinc-500">odd <b className="text-zinc-300">{rec.odd.toFixed(2)}</b></span>}
+        </div>
+        <p className="text-[15px] font-extrabold text-white mt-1.5">{rec.recommendation}</p>
+      </div>
+
+      {/* Confiança 0-10 + medidor + motivo */}
+      <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+        <div className="shrink-0">
+          <div className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">Confiança</div>
+          <div className={`text-[24px] font-extrabold leading-none ${meta.text}`}>
+            {rec.confidence.toFixed(1)}<span className="text-[12px] text-zinc-500">/10</span>
+          </div>
+        </div>
+        <Gauge pct={(rec.confidence ?? 0) * 10} color={meta.bar} />
+        {rec.reason && <p className="text-[11px] text-zinc-400 flex-1">{rec.reason}</p>}
+      </div>
+
+      {tiles.length > 0 && (
+        <div className="grid grid-cols-3 gap-2">
+          {tiles.map((t, i) => <StatTile key={i} t={t} />)}
         </div>
       )}
     </article>
