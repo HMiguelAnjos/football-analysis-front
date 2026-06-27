@@ -2,11 +2,12 @@
 // Lista pública (somente leitura) das entradas geradas pelo modelo, com
 // filtros por liga e mercado e alternância entre cartões e tabela.
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
 import type { FootballLeague, FootballRecommendation } from '../types'
 import RecommendationCard from '../components/RecommendationCard'
 import RecommendationTable from '../components/RecommendationTable'
+import MatchHeader from '../components/MatchHeader'
 import LeagueFilter from '../components/LeagueFilter'
 import MarketFilter from '../components/MarketFilter'
 import { SectionEmpty } from '../components/dashboard/parts'
@@ -51,6 +52,26 @@ export default function RecommendationsPage() {
     setRecs(null)
     load()
   }, [load])
+
+  // Agrupa as recomendações por JOGO (igual à aba Jogadores), ordenado por
+  // kickoff; dentro do jogo mantém a ordem do backend (mais provável primeiro).
+  const groups = useMemo(() => {
+    const byMatch = new Map<string, { match: string; kickoff?: string | null; group?: string | null; recs: FootballRecommendation[] }>()
+    for (const r of recs ?? []) {
+      const key = String(r.match_id ?? r.match)
+      let g = byMatch.get(key)
+      if (!g) {
+        g = { match: r.match, kickoff: r.kickoff, group: r.group, recs: [] }
+        byMatch.set(key, g)
+      }
+      g.recs.push(r)
+    }
+    return Array.from(byMatch.values()).sort((a, b) => {
+      const ta = a.kickoff ? new Date(a.kickoff).getTime() : Infinity
+      const tb = b.kickoff ? new Date(b.kickoff).getTime() : Infinity
+      return ta - tb
+    })
+  }, [recs])
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
@@ -116,8 +137,16 @@ export default function RecommendationsPage() {
       ) : recs.length === 0 ? (
         <SectionEmpty icon="⚡" text="Nenhuma recomendação para os filtros selecionados." />
       ) : view === 'cards' ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {recs.map(r => <RecommendationCard key={r.id} rec={r} />)}
+        <div className="space-y-7">
+          {groups.map((g, gi) => (
+            <section key={`${g.match}-${gi}`} className="space-y-3">
+              <MatchHeader match={g.match} kickoff={g.kickoff} group={g.group}
+                           count={g.recs.length} countLabel="entradas" />
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {g.recs.map((r, i) => <RecommendationCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} hideMatch />)}
+              </div>
+            </section>
+          ))}
         </div>
       ) : (
         <RecommendationTable recs={recs} />

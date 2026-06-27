@@ -9,6 +9,7 @@ import { api } from '../services/api'
 import type { FootballRecommendation } from '../types'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Pill } from '../components/dashboard/parts'
+import MatchHeader from '../components/MatchHeader'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
 import { confidenceMeta, formatPct } from '../lib/odds'
@@ -30,17 +31,6 @@ const MARKET_FILTERS = [
   { id: 'player_shots', label: 'Finalizações' },
   { id: 'player_assists', label: 'Assistências' },
 ]
-
-// Data/hora do kickoff no formato "qua, 16:00" (ou vazio se inválido).
-function kickoffLabel(iso?: string | null): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return ''
-  return d.toLocaleString('pt-BR', {
-    weekday: 'short', day: '2-digit', month: '2-digit',
-    hour: '2-digit', minute: '2-digit',
-  })
-}
 
 // Enquadramento da jogada pela probabilidade do modelo — SEM odds de casa.
 function strength(prob?: number | null): { label: string; tone: 'accent' | 'brand' | 'neutral' } {
@@ -232,17 +222,8 @@ export default function PropsPage({ embedded = false }: { embedded?: boolean } =
         <div className="space-y-7">
           {groups.map(g => (
             <section key={g.matchId} className="space-y-3">
-              {/* Cabeçalho do jogo */}
-              <div className="flex items-center gap-3 flex-wrap border-b border-white/[0.06] pb-2">
-                <h2 className="text-[16px] font-extrabold text-white">{g.match}</h2>
-                {kickoffLabel(g.kickoff) && (
-                  <span className="text-[12px] text-zinc-500">{kickoffLabel(g.kickoff)}</span>
-                )}
-                {g.group && g.group.length <= 2 && <Pill tone="neutral">Grupo {g.group}</Pill>}
-                <span className="ml-auto text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                  {g.picks.length} {g.picks.length === 1 ? 'dica' : 'dicas'}
-                </span>
-              </div>
+              <MatchHeader match={g.match} kickoff={g.kickoff} group={g.group}
+                           count={g.picks.length} countLabel="dicas" />
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {g.picks.map((r, i) => (
                   <PropCard key={`${g.matchId}-${r.selection}-${i}`} rec={r} />
