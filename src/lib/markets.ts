@@ -32,6 +32,7 @@ const MARKET_LABELS: Record<string, string> = {
   // Mercados extra do feed de "coisas que podem acontecer".
   team_total: 'Gols do time',
   first_half_goal: 'Gol no 1º tempo',
+  first_30_goal: 'Gol até 30 min',
 }
 
 export function marketLabel(market: string): string {

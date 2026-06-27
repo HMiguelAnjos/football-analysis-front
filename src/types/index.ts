@@ -369,6 +369,8 @@ export interface FootballRecommendation {
   /** Props de jogador: time do jogador + número da camisa. */
   team?: string | null
   player_number?: number | null
+  /** Selo de destaque (ex.: "Discrepância alta"). */
+  tag?: string | null
 }
 
 // ─── Recomendações AO VIVO (in-play, foco escanteios) ────────────────────────

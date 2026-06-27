@@ -44,11 +44,18 @@ export default function RecommendationCard({ rec }: { rec: FootballRecommendatio
           <h3 className="text-[15px] font-extrabold text-white truncate">{rec.match}</h3>
           <p className="text-[12px] text-zinc-500">{rec.league ?? '—'}</p>
         </div>
-        {conf && (
-          <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${conf.cls}`}>
-            {conf.label}
-          </span>
-        )}
+        <div className="shrink-0 flex items-center gap-1.5">
+          {rec.tag && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border bg-violet-500/15 text-violet-200 border-violet-500/30">
+              {rec.tag}
+            </span>
+          )}
+          {conf && (
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${conf.cls}`}>
+              {conf.label}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Seleção + mercado */}
