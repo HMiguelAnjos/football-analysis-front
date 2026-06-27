@@ -13,10 +13,11 @@ import { InlineError } from '../components/States'
 
 const REFRESH_MS = 30_000
 
-type Tab = 'escanteios' | 'chutes' | 'mercados'
+type Tab = 'escanteios' | 'gols' | 'chutes' | 'mercados'
 
 const DESC: Record<Tab, string> = {
   escanteios: 'Entradas de escanteios pela pressão ofensiva, ataques na área e ritmo do jogo. Atualiza a cada 30s.',
+  gols: 'Jogadores que ainda podem marcar agora — taxa de gol + pressão do time + batedor de pênalti. Atualiza a cada 30s.',
   chutes: 'Jogadores mais prováveis de chutar no gol agora — taxa + ritmo + pressão. Atualiza a cada 30s.',
   mercados: 'Valor recalculado pelo placar e minuto de cada jogo. Atualiza a cada 30s.',
 }
@@ -32,6 +33,9 @@ export default function LivePage() {
       if (tab === 'escanteios') {
         const r = await api.getLiveRecs()
         setCorners(r.data)
+      } else if (tab === 'gols') {
+        const r = await api.getLiveGoals({ limit: 50 })
+        setRecs(r.data)
       } else if (tab === 'chutes') {
         const r = await api.getLiveShots({ limit: 50 })
         setRecs(r.data)
@@ -77,7 +81,7 @@ export default function LivePage() {
       </div>
 
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
-        {([['escanteios', 'Escanteios'], ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados']] as const).map(([id, label]) => (
+        {([['escanteios', 'Escanteios'], ['gols', 'Gols'], ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados']] as const).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}

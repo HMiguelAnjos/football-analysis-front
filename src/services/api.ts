@@ -171,6 +171,9 @@ export const api = {
   // Especialista em CHUTES A GOL ao vivo (jogadores prováveis de chutar mais).
   getLiveShots: (params?: { limit?: number }) =>
     client.get<FootballRecommendation[]>(fb('/live-shots'), { params: clean(params) }),
+  // GOLS ao vivo: jogador que ainda pode marcar (taxa + pressão + pênalti).
+  getLiveGoals: (params?: { limit?: number }) =>
+    client.get<FootballRecommendation[]>(fb('/live-goals'), { params: clean(params) }),
   // Recomendações AO VIVO persistidas (foco escanteios) — pendentes.
   getLiveRecs: () =>
     client.get<LiveReco[]>('/football/live-recommendations/pending', {
