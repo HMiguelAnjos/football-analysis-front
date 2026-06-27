@@ -11,6 +11,7 @@ import type {
 import TeamStatsCard from '../components/TeamStatsCard'
 import TeamBadge from '../components/TeamBadge'
 import RecommendationCard from '../components/RecommendationCard'
+import { Flag, Gauge, GradeBadge, gradeFromLabel } from '../components/cards/parts'
 import { SectionCard, SectionEmpty, Pill } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/States'
@@ -191,24 +192,36 @@ export default function MatchAnalysisPage() {
 }
 
 function PropCard({ prop }: { prop: FootballRecommendation }) {
+  const meta = gradeFromLabel(prop.confidence as string | null | undefined)
+  const [name, ...rest] = (prop.selection || '').split('—')
+  const bet = rest.join('—').trim()
+  const pct = Math.round((prop.model_prob ?? 0) * 100)
   return (
     <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 flex flex-col gap-2">
-      <div className="text-[13px] font-bold text-white leading-snug">{prop.selection}</div>
-      <div className="grid grid-cols-3 gap-1.5 text-center">
-        <Mini label="Prob." value={formatPct(prop.model_prob)} strong />
-        <Mini label="Odd justa" value={formatOdd(prop.fair_odd)} />
-        <Mini label="Conf." value={(prop.confidence as string) ?? '—'} />
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <div className="text-[13px] font-extrabold text-white truncate">
+            {prop.player_number != null && <span className="text-zinc-500 mr-1">#{prop.player_number}</span>}
+            {name.trim()}
+          </div>
+          {prop.team && (
+            <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 min-w-0">
+              <Flag name={prop.team} /><span className="truncate">{prop.team}</span>
+            </div>
+          )}
+        </div>
+        <GradeBadge meta={meta} />
+      </div>
+      {bet && <div className="text-[12px] font-semibold text-brand-200">{bet}</div>}
+      <div className="flex items-center gap-2">
+        <div className="shrink-0">
+          <div className="text-[8px] font-bold uppercase tracking-wider text-zinc-600">Chance</div>
+          <div className={`text-[18px] font-extrabold tabular leading-none ${meta.text}`}>{pct}%</div>
+        </div>
+        <Gauge pct={pct} color={meta.bar} />
+        <div className="ml-auto text-[10px] text-zinc-500">justa <b className="text-zinc-300 tabular">{formatOdd(prop.fair_odd)}</b></div>
       </div>
       {prop.reason && <p className="text-[11px] text-zinc-500 leading-relaxed">{prop.reason}</p>}
-    </div>
-  )
-}
-
-function Mini({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-1.5 py-1">
-      <div className="text-[8px] font-bold uppercase tracking-wider text-zinc-600">{label}</div>
-      <div className={`text-[12px] font-extrabold tabular ${strong ? 'text-brand-200' : 'text-zinc-200'}`}>{value}</div>
     </div>
   )
 }

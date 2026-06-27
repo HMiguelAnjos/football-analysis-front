@@ -1,5 +1,6 @@
 import type { FootballPlayer } from '../types'
 import { Pill, type Tone } from './dashboard/parts'
+import { Flag } from './cards/parts'
 
 // ─── Card de estatísticas de um jogador ──────────────────────────────────────
 // Nome, time, posição, status provável + grade de stats (gols, assist., xG, xA,
@@ -34,9 +35,10 @@ export default function PlayerStatsCard({ player }: { player: FootballPlayer }) 
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="text-[15px] font-extrabold text-white truncate">{player.name}</h3>
-          <p className="text-[12px] text-zinc-500 truncate">
-            {[player.team, player.position].filter(Boolean).join(' · ') || '—'}
-          </p>
+          <div className="flex items-center gap-1.5 text-[12px] text-zinc-500 min-w-0">
+            <Flag name={player.team} />
+            <span className="truncate">{[player.team, player.position].filter(Boolean).join(' · ') || '—'}</span>
+          </div>
         </div>
         {player.rating != null ? (
           <span className="shrink-0 grid place-items-center min-w-[2.4rem] h-7 px-1.5 rounded-lg bg-brand-500/15 border border-brand-500/30 text-brand-200 text-[13px] font-extrabold tabular">
