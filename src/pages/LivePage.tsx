@@ -9,6 +9,7 @@ import type { AnalysisRecommendation, FootballRecommendation, LiveReco } from '.
 import RecommendationCard from '../components/RecommendationCard'
 import LiveRecoCard from '../components/LiveRecoCard'
 import AnalysisCard from '../components/AnalysisCard'
+import PlayerLiveCard from '../components/PlayerLiveCard'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
@@ -128,6 +129,12 @@ export default function LivePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(data as AnalysisRecommendation[]).map((r, i) => (
             <AnalysisCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} />
+          ))}
+        </div>
+      ) : tab === 'gols' || tab === 'chutes' ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(data as FootballRecommendation[]).map((r, i) => (
+            <PlayerLiveCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} />
           ))}
         </div>
       ) : (

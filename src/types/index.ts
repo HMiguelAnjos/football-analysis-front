@@ -371,6 +371,8 @@ export interface FootballRecommendation {
   player_number?: number | null
   /** Selo de destaque (ex.: "Discrepância alta"). */
   tag?: string | null
+  /** Tiles do card AO VIVO de jogador (pressão, projeção, ritmo, placar...). */
+  stats_used?: Record<string, number | string | null> | null
 }
 
 // ─── Recomendações AO VIVO (in-play, foco escanteios) ────────────────────────
