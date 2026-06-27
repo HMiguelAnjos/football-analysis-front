@@ -401,6 +401,35 @@ export interface LiveReco {
   updated_at?: string | null
 }
 
+/** Recomendação da engine de análise (scores 0-100 + grade explicável). */
+export interface AnalysisRecommendation {
+  id: number
+  match_id?: number | null
+  match?: string | null
+  league?: string | null
+  market: string
+  selection: string
+  line?: number | null
+  odd?: number | null
+  /** 0-100 */
+  confidence: number
+  /** 0-100 — convicção do modelo */
+  edge_score: number
+  /** 0-100 — maior = mais arriscado */
+  risk_score: number
+  recommendation_type: 'PRE_GAME' | 'LIVE'
+  grade: 'A+' | 'A' | 'B' | 'C' | 'AVOID'
+  reasons: string[]
+  warnings: string[]
+  /** scores do jogo (0-100), None quando não se aplica */
+  raw_scores: Record<string, number | null>
+  team?: string | null
+  context?: string
+  stage?: string | null
+  group?: string | null
+  kickoff?: string | null
+}
+
 // ─── Entradas ao vivo (publicadas por analistas) ─────────────────────────────
 export interface FootballLivePick {
   id: number | string

@@ -4,9 +4,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
-import type { FootballLeague, FootballRecommendation } from '../types'
+import type { AnalysisRecommendation, FootballLeague, FootballRecommendation } from '../types'
 import RecommendationCard from '../components/RecommendationCard'
 import RecommendationTable from '../components/RecommendationTable'
+import AnalysisCard from '../components/AnalysisCard'
 import MatchHeader from '../components/MatchHeader'
 import LeagueFilter from '../components/LeagueFilter'
 import MarketFilter from '../components/MarketFilter'
@@ -17,12 +18,45 @@ import { useCompetition } from '../hooks/useCompetition'
 import PropsPage from './PropsPage'
 
 type View = 'cards' | 'table'
-type Tab = 'mercados' | 'jogadores'
+type Tab = 'mercados' | 'jogadores' | 'analise'
+
+// Agrupa recomendações por jogo, ordenado por kickoff. Aceita qualquer item com
+// match/match_id/kickoff/group (mercados ou análise).
+interface Groupable {
+  match_id?: number | string | null
+  match?: string | null
+  kickoff?: string | null
+  group?: string | null
+}
+interface RecGroup<T> {
+  match: string
+  kickoff?: string | null
+  group?: string | null
+  recs: T[]
+}
+function groupByMatch<T extends Groupable>(items: T[]): RecGroup<T>[] {
+  const byMatch = new Map<string, RecGroup<T>>()
+  for (const r of items) {
+    const key = String(r.match_id ?? r.match)
+    let g = byMatch.get(key)
+    if (!g) {
+      g = { match: r.match ?? '—', kickoff: r.kickoff, group: r.group, recs: [] }
+      byMatch.set(key, g)
+    }
+    g.recs.push(r)
+  }
+  return Array.from(byMatch.values()).sort((a, b) => {
+    const ta = a.kickoff ? new Date(a.kickoff).getTime() : Infinity
+    const tb = b.kickoff ? new Date(b.kickoff).getTime() : Infinity
+    return ta - tb
+  })
+}
 
 export default function RecommendationsPage() {
   const { isWorldCup } = useCompetition()
   const [tab, setTab] = useState<Tab>('mercados')
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
+  const [analysis, setAnalysis] = useState<AnalysisRecommendation[] | null>(null)
   const [leagues, setLeagues] = useState<FootballLeague[]>([])
   const [error, setError] = useState(false)
 
@@ -48,36 +82,35 @@ export default function RecommendationsPage() {
     }
   }, [market])
 
-  useEffect(() => {
-    setRecs(null)
-    load()
-  }, [load])
-
-  // Agrupa as recomendações por JOGO (igual à aba Jogadores), ordenado por
-  // kickoff; dentro do jogo mantém a ordem do backend (mais provável primeiro).
-  const groups = useMemo(() => {
-    const byMatch = new Map<string, { match: string; kickoff?: string | null; group?: string | null; recs: FootballRecommendation[] }>()
-    for (const r of recs ?? []) {
-      const key = String(r.match_id ?? r.match)
-      let g = byMatch.get(key)
-      if (!g) {
-        g = { match: r.match, kickoff: r.kickoff, group: r.group, recs: [] }
-        byMatch.set(key, g)
-      }
-      g.recs.push(r)
+  const loadAnalysis = useCallback(async () => {
+    try {
+      const r = await api.getAnalysis({ limit: 60 })
+      setAnalysis(r.data)
+      setError(false)
+    } catch {
+      setError(true)
+      setAnalysis([])
     }
-    return Array.from(byMatch.values()).sort((a, b) => {
-      const ta = a.kickoff ? new Date(a.kickoff).getTime() : Infinity
-      const tb = b.kickoff ? new Date(b.kickoff).getTime() : Infinity
-      return ta - tb
-    })
-  }, [recs])
+  }, [])
+
+  useEffect(() => {
+    if (tab === 'analise') {
+      setAnalysis(null)
+      loadAnalysis()
+    } else if (tab === 'mercados') {
+      setRecs(null)
+      load()
+    }
+  }, [tab, load, loadAnalysis])
+
+  const groups = useMemo(() => groupByMatch(recs ?? []), [recs])
+  const analysisGroups = useMemo(() => groupByMatch(analysis ?? []), [analysis])
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
       {/* Toggle principal: mercados (seleção) ↔ jogadores (props) */}
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
-        {([['mercados', 'Mercados'], ['jogadores', 'Jogadores']] as const).map(([id, label]) => (
+        {([['mercados', 'Mercados'], ['jogadores', 'Jogadores'], ['analise', 'Análise']] as const).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
@@ -92,6 +125,48 @@ export default function RecommendationsPage() {
 
       {tab === 'jogadores' ? (
         <PropsPage embedded />
+      ) : tab === 'analise' ? (
+        <>
+          <div className="flex items-center gap-2">
+            <p className="text-[13px] text-zinc-500">
+              Análise por scores (0–100) com grade e explicação. Expanda cada card para ver os scores.
+            </p>
+            <button
+              onClick={loadAnalysis}
+              className="ml-auto text-[11px] font-bold uppercase tracking-wider px-3 py-2 rounded-lg border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.16] transition-colors"
+            >
+              ↻
+            </button>
+          </div>
+          {error && (
+            <InlineError
+              title="Falha ao carregar a análise"
+              description="Verifique a conexão com o backend e tente novamente."
+              onRetry={loadAnalysis}
+            />
+          )}
+          {analysis === null ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)}
+            </div>
+          ) : analysis.length === 0 ? (
+            <SectionEmpty icon="📊" text="Nenhuma recomendação de análise com grade suficiente. Quando houver dados (jogos disputados, xG), os grades sobem." />
+          ) : (
+            <div className="space-y-7">
+              {analysisGroups.map((g, gi) => (
+                <section key={`${g.match}-${gi}`} className="space-y-3">
+                  <MatchHeader match={g.match} kickoff={g.kickoff} group={g.group}
+                               count={g.recs.length} countLabel="análises" />
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {g.recs.map((r, i) => (
+                      <AnalysisCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} hideMatch />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
+        </>
       ) : (
         <>
       <div className="flex flex-wrap items-center gap-2.5">

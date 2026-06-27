@@ -5,34 +5,37 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../services/api'
-import type { FootballRecommendation, LiveReco } from '../types'
+import type { AnalysisRecommendation, FootballRecommendation, LiveReco } from '../types'
 import RecommendationCard from '../components/RecommendationCard'
 import LiveRecoCard from '../components/LiveRecoCard'
+import AnalysisCard from '../components/AnalysisCard'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
 
 const REFRESH_MS = 30_000
 
-type Tab = 'escanteios' | 'gols' | 'chutes' | 'mercados'
-type TabData = LiveReco[] | FootballRecommendation[]
+type Tab = 'escanteios' | 'gols' | 'chutes' | 'mercados' | 'analise'
+type TabData = LiveReco[] | FootballRecommendation[] | AnalysisRecommendation[]
 
 const DESC: Record<Tab, string> = {
   escanteios: 'Entradas de escanteios pela pressão ofensiva, ataques na área e ritmo do jogo. Atualiza a cada 30s.',
   gols: 'Jogadores que ainda podem marcar agora — taxa de gol + pressão do time + batedor de pênalti. Atualiza a cada 30s.',
   chutes: 'Jogadores mais prováveis de chutar no gol agora — taxa + ritmo + pressão. Atualiza a cada 30s.',
   mercados: 'Valor recalculado pelo placar e minuto de cada jogo. Atualiza a cada 30s.',
+  analise: 'Análise por scores ao vivo (escanteios/gols/cartões) com grade e explicação. Atualiza a cada 30s.',
 }
 
 const TABS: [Tab, string][] = [
   ['escanteios', 'Escanteios'], ['gols', 'Gols'],
-  ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados'],
+  ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados'], ['analise', 'Análise'],
 ]
 
 async function fetchTab(t: Tab): Promise<TabData> {
   if (t === 'escanteios') return (await api.getLiveRecs()).data
   if (t === 'gols') return (await api.getLiveGoals({ limit: 50 })).data
   if (t === 'chutes') return (await api.getLiveShots({ limit: 50 })).data
+  if (t === 'analise') return (await api.getLiveAnalysis({ limit: 40 })).data
   return (await api.getLiveOpportunities({ limit: 40 })).data
 }
 
@@ -120,6 +123,12 @@ export default function LivePage() {
       ) : tab === 'escanteios' ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {(data as LiveReco[]).map(r => <LiveRecoCard key={r.id} rec={r} />)}
+        </div>
+      ) : tab === 'analise' ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(data as AnalysisRecommendation[]).map((r, i) => (
+            <AnalysisCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} />
+          ))}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -15,6 +15,7 @@ import type {
   FootballLivePickCreate,
   FootballLivePickUpdate,
   LiveReco,
+  AnalysisRecommendation,
   FootballPickResult,
   FootballPerformanceSummary,
   FootballLeague,
@@ -174,6 +175,11 @@ export const api = {
   // GOLS ao vivo: jogador que ainda pode marcar (taxa + pressão + pênalti).
   getLiveGoals: (params?: { limit?: number }) =>
     client.get<FootballRecommendation[]>(fb('/live-goals'), { params: clean(params) }),
+  // Engine de ANÁLISE (scores + grade) — pré-jogo e ao vivo.
+  getAnalysis: (params?: { limit?: number; include_avoid?: boolean }) =>
+    client.get<AnalysisRecommendation[]>(fb('/analysis'), { params: clean(params) }),
+  getLiveAnalysis: (params?: { limit?: number; include_avoid?: boolean }) =>
+    client.get<AnalysisRecommendation[]>(fb('/live-analysis'), { params: clean(params) }),
   // Recomendações AO VIVO persistidas (foco escanteios) — pendentes.
   getLiveRecs: () =>
     client.get<LiveReco[]>('/football/live-recommendations/pending', {
