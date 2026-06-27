@@ -1,8 +1,9 @@
 // ─── LivePage — recomendações AO VIVO ────────────────────────────────────────
-// Foco em ESCANTEIOS (corner-first), + chutes a gol e mercados in-play.
-// Atualiza sozinho a cada 30s.
+// Foco em ESCANTEIOS (corner-first), + gols, chutes a gol e mercados in-play.
+// Atualiza sozinho a cada 30s. Cada aba guarda o último resultado em cache, então
+// alternar entre abas mostra na hora (sem skeleton) e revalida em background.
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../services/api'
 import type { FootballRecommendation, LiveReco } from '../types'
 import RecommendationCard from '../components/RecommendationCard'
@@ -14,6 +15,7 @@ import { InlineError } from '../components/States'
 const REFRESH_MS = 30_000
 
 type Tab = 'escanteios' | 'gols' | 'chutes' | 'mercados'
+type TabData = LiveReco[] | FootballRecommendation[]
 
 const DESC: Record<Tab, string> = {
   escanteios: 'Entradas de escanteios pela pressão ofensiva, ataques na área e ritmo do jogo. Atualiza a cada 30s.',
@@ -22,45 +24,47 @@ const DESC: Record<Tab, string> = {
   mercados: 'Valor recalculado pelo placar e minuto de cada jogo. Atualiza a cada 30s.',
 }
 
+const TABS: [Tab, string][] = [
+  ['escanteios', 'Escanteios'], ['gols', 'Gols'],
+  ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados'],
+]
+
+async function fetchTab(t: Tab): Promise<TabData> {
+  if (t === 'escanteios') return (await api.getLiveRecs()).data
+  if (t === 'gols') return (await api.getLiveGoals({ limit: 50 })).data
+  if (t === 'chutes') return (await api.getLiveShots({ limit: 50 })).data
+  return (await api.getLiveOpportunities({ limit: 40 })).data
+}
+
 export default function LivePage() {
   const [tab, setTab] = useState<Tab>('escanteios')
-  const [corners, setCorners] = useState<LiveReco[] | null>(null)
-  const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
+  // Cache por aba (sobrevive à troca de aba) — chave da resposta rápida.
+  const cache = useRef<Partial<Record<Tab, TabData>>>({})
+  const [data, setData] = useState<TabData | null>(null)
   const [error, setError] = useState(false)
 
   const load = useCallback(async () => {
     try {
-      if (tab === 'escanteios') {
-        const r = await api.getLiveRecs()
-        setCorners(r.data)
-      } else if (tab === 'gols') {
-        const r = await api.getLiveGoals({ limit: 50 })
-        setRecs(r.data)
-      } else if (tab === 'chutes') {
-        const r = await api.getLiveShots({ limit: 50 })
-        setRecs(r.data)
-      } else {
-        const r = await api.getLiveOpportunities({ limit: 40 })
-        setRecs(r.data)
-      }
+      const d = await fetchTab(tab)
+      cache.current[tab] = d
+      setData(d)
       setError(false)
     } catch {
       setError(true)
-      setCorners([])
-      setRecs([])
+      if (!cache.current[tab]) setData([])
     }
   }, [tab])
 
   useEffect(() => {
-    setCorners(null)
-    setRecs(null)
+    // Mostra o cache da aba na hora (se houver); senão, skeleton.
+    setData(cache.current[tab] ?? null)
     load()
     const id = setInterval(load, REFRESH_MS)
     return () => clearInterval(id)
-  }, [load])
+  }, [tab, load])
 
-  const loading = tab === 'escanteios' ? corners === null : recs === null
-  const empty = tab === 'escanteios' ? corners?.length === 0 : recs?.length === 0
+  const loading = data === null
+  const empty = data?.length === 0
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
@@ -81,7 +85,7 @@ export default function LivePage() {
       </div>
 
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
-        {([['escanteios', 'Escanteios'], ['gols', 'Gols'], ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados']] as const).map(([id, label]) => (
+        {TABS.map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
@@ -115,11 +119,13 @@ export default function LivePage() {
         />
       ) : tab === 'escanteios' ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {corners!.map(r => <LiveRecoCard key={r.id} rec={r} />)}
+          {(data as LiveReco[]).map(r => <LiveRecoCard key={r.id} rec={r} />)}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {recs!.map((r, i) => <RecommendationCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} />)}
+          {(data as FootballRecommendation[]).map((r, i) => (
+            <RecommendationCard key={`${r.match_id}-${r.market}-${r.selection}-${i}`} rec={r} />
+          ))}
         </div>
       )}
     </div>
