@@ -46,10 +46,6 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
   },
   {
-    to: '/entradas', label: 'Entradas de Especialista',
-    icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
-  },
-  {
     to: '/jogadores', label: 'Jogadores',
     icon: ic(<><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6" opacity="0.5" /></>),
   },
@@ -80,10 +76,6 @@ const WC_NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
   },
   {
-    to: '/entradas', label: 'Entradas de Especialista',
-    icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M5 12a7 7 0 0 1 7-7M19 12a7 7 0 0 1-7 7" opacity="0.5" /></>),
-  },
-  {
     to: '/jogadores', label: 'Jogadores',
     icon: ic(<><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6" opacity="0.5" /></>),
   },
@@ -92,10 +84,6 @@ const WC_NAV_ITEMS: NavItem[] = [
 // Itens administrativos — cada um exige uma PERMISSÃO. Renderizados conforme o
 // role: Publicar Entrada pra analista+admin, Usuários só pra admin.
 const ADMIN_NAV_ITEMS: (NavItem & { permission: Permission })[] = [
-  {
-    to: '/publicar', label: 'Publicar Entrada', permission: 'publishPicks',
-    icon: ic(<><path d="M12 5v14M5 12h14" /></>),
-  },
   {
     to: '/resultados-ao-vivo', label: 'Resultados ao Vivo', permission: 'publishPicks',
     icon: ic(<><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>),
