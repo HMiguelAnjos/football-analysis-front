@@ -27,9 +27,12 @@ export const MARKETS: MarketDef[] = [
   { id: 'player_assists', label: 'Assistências (jogador)' },
 ]
 
-const MARKET_LABELS: Record<string, string> = Object.fromEntries(
-  MARKETS.map(m => [m.id, m.label]),
-)
+const MARKET_LABELS: Record<string, string> = {
+  ...Object.fromEntries(MARKETS.map(m => [m.id, m.label])),
+  // Mercados extra do feed de "coisas que podem acontecer".
+  team_total: 'Gols do time',
+  first_half_goal: 'Gol no 1º tempo',
+}
 
 export function marketLabel(market: string): string {
   return MARKET_LABELS[market] ?? market
