@@ -38,7 +38,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="9" /><path d="m12 7 2.5 1.8-1 3h-3l-1-3L12 7Z" /></>),
   },
   {
-    to: '/recomendacoes', label: 'Recomendações',
+    to: '/recomendacoes', label: 'Pré-Jogo',
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
   },
   {
@@ -68,7 +68,7 @@ const WC_NAV_ITEMS: NavItem[] = [
     icon: ic(<><circle cx="12" cy="12" r="9" /><path d="m12 7 2.5 1.8-1 3h-3l-1-3L12 7Z" /></>),
   },
   {
-    to: '/recomendacoes', label: 'Recomendações',
+    to: '/recomendacoes', label: 'Pré-Jogo',
     icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
   },
   {
