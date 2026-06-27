@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
 import type { FootballLeague, FootballMatch } from '../types'
 import MatchList from '../components/MatchList'
+import PageHeader from '../components/PageHeader'
 import LeagueFilter from '../components/LeagueFilter'
 import DateFilter from '../components/DateFilter'
 import { selectCls } from '../components/filterStyles'
@@ -63,6 +64,7 @@ export default function MatchesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <PageHeader title="Jogos" subtitle="Partidas por data, liga e status — clique em um jogo para a análise completa." />
       <div className="flex flex-wrap items-center gap-2.5">
         <DateFilter value={date} onChange={setDate} />
         {!isWorldCup && (

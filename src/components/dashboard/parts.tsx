@@ -61,6 +61,7 @@ export function SectionCard({
       <header className="flex items-start justify-between gap-3 mb-4">
         <div className="min-w-0">
           <h2 className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.16em] text-zinc-200">
+            <span aria-hidden className="w-1 h-3.5 rounded-full bg-gradient-to-b from-brand-400 to-brand-600 shrink-0" />
             {icon && <span aria-hidden>{icon}</span>}
             {title}
           </h2>

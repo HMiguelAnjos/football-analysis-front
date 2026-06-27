@@ -11,6 +11,7 @@ import type {
 import MatchList from '../components/MatchList'
 import RecommendationCard from '../components/RecommendationCard'
 import PlayerStatsCard from '../components/PlayerStatsCard'
+import PageHeader from '../components/PageHeader'
 import PerformanceCards from '../components/PerformanceCards'
 import { SectionCard, SectionEmpty, KpiCard } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
@@ -57,6 +58,8 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <PageHeader title="Visão Geral" subtitle="Sua central de decisão — desempenho, oportunidades e jogos do dia." />
+
       {/* KPIs da operação */}
       {perf === null ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

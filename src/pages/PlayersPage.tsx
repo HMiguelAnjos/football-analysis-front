@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
 import type { FootballPlayer } from '../types'
 import PlayerStatsCard from '../components/PlayerStatsCard'
+import PageHeader from '../components/PageHeader'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { ErrorState } from '../components/States'
@@ -76,6 +77,7 @@ export default function PlayersPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-4">
+      <PageHeader title="Jogadores" subtitle="Líderes por estatística, índices compostos (0–100) e busca por nome." />
       <div className="flex flex-wrap items-center gap-2.5">
         <input
           value={search}

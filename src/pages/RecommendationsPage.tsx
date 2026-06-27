@@ -9,6 +9,7 @@ import RecommendationCard from '../components/RecommendationCard'
 import RecommendationTable from '../components/RecommendationTable'
 import AnalysisCard from '../components/AnalysisCard'
 import MatchHeader from '../components/MatchHeader'
+import PageHeader from '../components/PageHeader'
 import LeagueFilter from '../components/LeagueFilter'
 import MarketFilter from '../components/MarketFilter'
 import { SectionEmpty } from '../components/dashboard/parts'
@@ -108,14 +109,17 @@ export default function RecommendationsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <PageHeader title="Pré-Jogo" subtitle="Entradas do modelo antes da bola rolar — mercados, jogadores e análise por scores." />
       {/* Toggle principal: mercados (seleção) ↔ jogadores (props) */}
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
         {([['mercados', 'Mercados'], ['jogadores', 'Jogadores'], ['analise', 'Análise']] as const).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-md transition-colors ${
-              tab === id ? 'bg-brand-500/20 text-brand-300' : 'text-zinc-500 hover:text-zinc-300'
+            className={`text-[12px] font-bold uppercase tracking-wider px-4 py-1.5 rounded-md transition-all ${
+              tab === id
+                ? 'bg-gradient-to-b from-brand-500/25 to-brand-500/10 text-brand-200 ring-1 ring-inset ring-brand-500/30 shadow-sm'
+                : 'text-zinc-500 hover:text-zinc-300'
             }`}
           >
             {label}
