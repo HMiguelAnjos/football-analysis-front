@@ -20,6 +20,7 @@ const MARKET_LABEL: Record<string, string> = {
   player_shots: 'Finalizações',
   anytime_scorer: 'Marcar a qualquer momento',
   player_assists: 'Assistências',
+  player_tackles: 'Desarmes',
 }
 const marketLabel = (m: string) => MARKET_LABEL[m] ?? m
 
@@ -29,6 +30,7 @@ const MARKET_FILTERS = [
   { id: 'anytime_scorer', label: 'Marcar' },
   { id: 'player_shots_on_target', label: 'Chutes no gol' },
   { id: 'player_shots', label: 'Finalizações' },
+  { id: 'player_tackles', label: 'Desarmes' },
   { id: 'player_assists', label: 'Assistências' },
 ]
 

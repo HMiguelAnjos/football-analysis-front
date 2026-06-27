@@ -34,6 +34,7 @@ const MARKET_LABELS: Record<string, string> = {
   first_half_goal: 'Gol no 1º tempo',
   first_30_goal: 'Gol até 30 min',
   anytime_scorer: 'Marcar a qualquer momento',
+  player_tackles: 'Desarmes',
 }
 
 export function marketLabel(market: string): string {
