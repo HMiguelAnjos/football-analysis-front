@@ -62,8 +62,9 @@ export default function PlayerLiveCard({ rec }: { rec: FootballRecommendation })
         </div>
         {rec.line != null && (
           <div className="shrink-0 text-right">
-            <div className="text-[26px] font-extrabold text-white leading-none">{rec.line % 1 === 0 ? rec.line : rec.line.toFixed(1)}</div>
-            <div className="text-[9px] text-zinc-500 leading-tight">Chutes ao gol<br />(jogador)</div>
+            {/* Mercado de contagem é inteiro: "N+" (a meia-linha é só interna). */}
+            <div className="text-[26px] font-extrabold text-white leading-none">{Math.round(rec.line + 0.5)}+</div>
+            <div className="text-[9px] text-zinc-500 leading-tight">chutes<br />no gol</div>
           </div>
         )}
       </div>
