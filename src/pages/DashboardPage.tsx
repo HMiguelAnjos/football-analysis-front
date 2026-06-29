@@ -62,8 +62,8 @@ export default function DashboardPage() {
 
       {/* KPIs da operação */}
       {perf === null ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)}
         </div>
       ) : (
         <PerformanceCards totals={perf} />
