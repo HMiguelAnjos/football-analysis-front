@@ -182,7 +182,7 @@ export default function Sidebar({
           <img
             src="/clutchpro-symbol.png"
             alt=""
-            className="h-9 w-auto object-contain shrink-0
+            className="h-12 w-auto object-contain shrink-0
                        transition-transform duration-200 group-hover:scale-[1.05]"
           />
           <div

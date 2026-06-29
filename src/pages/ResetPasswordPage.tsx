@@ -64,7 +64,7 @@ export default function ResetPasswordPage() {
           <img
             src="/clutchpro-symbol.png"
             alt=""
-            className="h-9 w-auto object-contain"
+            className="h-14 w-auto object-contain"
           />
           <div
             className="text-[22px] font-extrabold tracking-[-0.02em] leading-none"

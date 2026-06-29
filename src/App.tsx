@@ -125,7 +125,7 @@ function Gate() {
     return (
       <div className="min-h-screen bg-ink-900 grid place-items-center">
         <div className="flex flex-col items-center gap-3">
-          <img src="/clutchpro-symbol.png" alt="" className="h-10 w-auto opacity-90" />
+          <img src="/clutchpro-symbol.png" alt="" className="h-16 w-auto opacity-90" />
           <div className="skeleton h-2 w-24 rounded-full" />
         </div>
       </div>
