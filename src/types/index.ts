@@ -419,6 +419,8 @@ export interface PerformanceBreakdown {
   totals: PerfRow
   by_market: Record<string, PerfRow>
   by_confidence: Record<string, PerfRow>
+  /** 'legacy_com_odds' (engine antigo, baseado em odds) vs 'atual_sem_odds' (confidence-first). */
+  by_era: Record<string, PerfRow>
 }
 
 /** Recomendação da engine de análise (scores 0-100 + grade explicável). */

@@ -32,6 +32,11 @@ const CONF_MID: Record<string, number> = {
   '90-100': 0.95, '80-89': 0.845, '70-79': 0.745, '60-69': 0.645, '<60': 0.55,
 }
 
+const ERA_LABEL: Record<string, string> = {
+  legacy_com_odds: 'Antes (engine com odds)',
+  atual_sem_odds: 'Agora (confidence-first)',
+}
+
 export default function PerformanceByMarket({ data }: { data: PerformanceBreakdown }) {
   const markets = Object.entries(data.by_market)
     .filter(([, b]) => b.won + b.lost > 0)
@@ -39,8 +44,33 @@ export default function PerformanceByMarket({ data }: { data: PerformanceBreakdo
   const conf = CONF_ORDER
     .filter(k => data.by_confidence[k] && data.by_confidence[k].won + data.by_confidence[k].lost > 0)
     .map(k => [k, data.by_confidence[k]] as [string, PerfRow])
+  const eras = Object.entries(data.by_era ?? {}).filter(([, b]) => b.won + b.lost > 0)
 
   return (
+    <div className="space-y-5">
+      {eras.length > 0 && (
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-2">
+            Legado (com odds) × Atual (confidence-first)
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {eras.map(([k, b]) => (
+              <div key={k} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] text-zinc-500">{ERA_LABEL[k] ?? k}</div>
+                  <div className="text-[11px] text-zinc-600 tabular">{b.won}V · {b.lost}D · {b.total} total</div>
+                </div>
+                <div className={`text-[20px] font-extrabold tabular ${rateColor(b.accuracy)}`}>{pct(b.accuracy)}</div>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-zinc-600 mt-1.5">
+            Picks "antes" usavam o engine de valor (odds) e incluem mercados que o sistema não gera mais
+            (asian handicap, DNB) — só liquidaram agora que os workers voltaram a rodar.
+          </p>
+        </div>
+      )}
+
     <div className="grid gap-5 lg:grid-cols-2">
       {/* Por mercado */}
       <div>
@@ -88,6 +118,7 @@ export default function PerformanceByMarket({ data }: { data: PerformanceBreakdo
           A última coluna é o desvio (acerto real − prometido). Negativo = modelo superconfiante nessa faixa.
         </p>
       </div>
+    </div>
     </div>
   )
 }
