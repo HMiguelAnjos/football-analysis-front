@@ -7,12 +7,14 @@ import { Link } from 'react-router-dom'
 import { api } from '../services/api'
 import type {
   FootballMatch, FootballPlayer, FootballRecommendation, FootballPerformanceSummary,
+  PerformanceBreakdown,
 } from '../types'
 import MatchList from '../components/MatchList'
 import RecommendationCard from '../components/RecommendationCard'
 import PlayerStatsCard from '../components/PlayerStatsCard'
 import PageHeader from '../components/PageHeader'
 import PerformanceCards from '../components/PerformanceCards'
+import PerformanceByMarket from '../components/PerformanceByMarket'
 import { SectionCard, SectionEmpty, KpiCard } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { useVisiblePolling } from '../hooks/useVisiblePolling'
@@ -27,6 +29,7 @@ export default function DashboardPage() {
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
   const [live, setLive] = useState<FootballRecommendation[]>([])
   const [perf, setPerf] = useState<FootballPerformanceSummary['totals'] | null>(null)
+  const [breakdown, setBreakdown] = useState<PerformanceBreakdown | null>(null)
   const [players, setPlayers] = useState<FootballPlayer[]>([])
 
   const loadMatches = useCallback(async () => {
@@ -49,6 +52,11 @@ export default function DashboardPage() {
     setLive(liveR.status === 'fulfilled' ? liveR.value.data : [])
     setPerf(perfR.status === 'fulfilled' ? perfR.value.data.totals : EMPTY_TOTALS)
     setPlayers(plR.status === 'fulfilled' ? plR.value.data : [])
+    // Breakdown por mercado + calibração (admin) — silencioso se não tiver acesso.
+    try {
+      const b = await api.getPerformanceBreakdown()
+      setBreakdown(b.data)
+    } catch { setBreakdown(null) }
   }, [])
 
   useEffect(() => { loadMatches(); loadRest() }, [loadMatches, loadRest])
@@ -67,6 +75,14 @@ export default function DashboardPage() {
         </div>
       ) : (
         <PerformanceCards totals={perf} />
+      )}
+
+      {/* Desempenho por mercado + calibração (admin) */}
+      {breakdown && (breakdown.totals.won + breakdown.totals.lost) > 0 && (
+        <SectionCard title="Desempenho por mercado" icon="📊"
+          subtitle="O que mais acerta + calibração (confiança prometida × acerto real).">
+          <PerformanceByMarket data={breakdown} />
+        </SectionCard>
       )}
 
       {/* Oportunidades / entradas / jogos ao vivo */}

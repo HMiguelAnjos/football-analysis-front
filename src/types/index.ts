@@ -403,6 +403,24 @@ export interface LiveReco {
   updated_at?: string | null
 }
 
+/** Uma linha de desempenho (total, mercado ou faixa de confiança). */
+export interface PerfRow {
+  won: number
+  lost: number
+  push: number
+  void: number
+  total: number
+  accuracy: number
+  roi: number
+  profit_units: number
+}
+/** Breakdown de performance por mercado e por faixa de confiança (calibração). */
+export interface PerformanceBreakdown {
+  totals: PerfRow
+  by_market: Record<string, PerfRow>
+  by_confidence: Record<string, PerfRow>
+}
+
 /** Recomendação da engine de análise (scores 0-100 + grade explicável). */
 export interface AnalysisRecommendation {
   id: number

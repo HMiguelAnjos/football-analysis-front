@@ -16,6 +16,7 @@ import type {
   FootballLivePickUpdate,
   LiveReco,
   AnalysisRecommendation,
+  PerformanceBreakdown,
   FootballPickResult,
   FootballPerformanceSummary,
   FootballLeague,
@@ -204,6 +205,9 @@ export const api = {
   getPickResults: () => client.get<FootballPickResult[]>(fb('/pick-results')),
   getPerformance: () =>
     client.get<FootballPerformanceSummary>(fb('/performance')),
+  // Breakdown por mercado + calibração por faixa de confiança (admin).
+  getPerformanceBreakdown: () =>
+    client.get<PerformanceBreakdown>('/admin/performance'),
 
   // ── Catálogos ───────────────────────────────────────────────────────────────
   // Ligas/jogadores/odds-board não existem no contexto Copa → sempre geral.
