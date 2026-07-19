@@ -3,8 +3,6 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { can, type Permission } from '../auth/permissions'
 import { toDisplayName } from '../lib/format'
-import { useCompetition } from '../hooks/useCompetition'
-import CompetitionToggle from './CompetitionToggle'
 
 // ─── ClutchPro Football Sidebar (premium dark) ───────────────────────────────
 // Rail vertical à esquerda. Desktop (≥ lg): fixa, 208px. Mobile (< lg): drawer.
@@ -52,32 +50,6 @@ const NAV_ITEMS: NavItem[] = [
   {
     to: '/config', label: 'Configurações',
     icon: ic(<><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 7.5 19.4l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 5 13.6a1.65 1.65 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 7.5" opacity="0.6" /></>),
-  },
-]
-
-// Menu do modo Copa do Mundo — reusa as MESMAS rotas/telas (que trocam de
-// dados pelo contexto) + telas exclusivas (Grupos, Mata-mata). Esconde o que
-// não faz sentido no torneio (Ligas/Jogadores/Odds).
-const WC_NAV_ITEMS: NavItem[] = [
-  {
-    to: '/', label: 'Visão Geral', end: true,
-    icon: ic(<><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></>),
-  },
-  {
-    to: '/jogos', label: 'Jogos',
-    icon: ic(<><circle cx="12" cy="12" r="9" /><path d="m12 7 2.5 1.8-1 3h-3l-1-3L12 7Z" /></>),
-  },
-  {
-    to: '/recomendacoes', label: 'Pré-Jogo',
-    icon: ic(<><path d="m13 2-3 7h5l-3 7" /><circle cx="12" cy="12" r="9" opacity="0.3" /></>),
-  },
-  {
-    to: '/ao-vivo', label: 'Ao Vivo',
-    icon: ic(<><circle cx="12" cy="12" r="3" fill="currentColor" /><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4" opacity="0.6" /></>),
-  },
-  {
-    to: '/jogadores', label: 'Jogadores',
-    icon: ic(<><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6" opacity="0.5" /></>),
   },
 ]
 
@@ -142,8 +114,7 @@ export default function Sidebar({
 }) {
   const location = useLocation()
   const { user, logout } = useAuth()
-  const { isWorldCup } = useCompetition()
-  const navItems = isWorldCup ? WC_NAV_ITEMS : NAV_ITEMS
+  const navItems = NAV_ITEMS
   // Itens admin que ESTE usuário pode ver, por permissão.
   const adminItems = ADMIN_NAV_ITEMS.filter(item => can(user, item.permission))
   useEffect(() => {
@@ -199,15 +170,10 @@ export default function Sidebar({
 
         <div className="mx-4 h-px bg-white/[0.06]" />
 
-        {/* ── Toggle Futebol / Copa do Mundo ── */}
-        <div className="px-3 pt-3">
-          <CompetitionToggle />
-        </div>
-
         {/* ── Navegação ── */}
         <nav className="flex-1 overflow-y-auto flex flex-col gap-0.5 px-2.5 py-4">
           <p className="px-3 pb-1.5 text-[9px] font-bold uppercase tracking-[0.22em] text-zinc-600">
-            {isWorldCup ? 'Copa do Mundo' : 'Menu'}
+            Menu
           </p>
           {navItems.map(item => (
             <NavItemLink key={item.to} item={item} onNavigate={onClose} />

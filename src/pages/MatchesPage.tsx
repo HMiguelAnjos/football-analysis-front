@@ -11,7 +11,6 @@ import DateFilter from '../components/DateFilter'
 import { selectCls } from '../components/filterStyles'
 import { InlineError } from '../components/States'
 import { useVisiblePolling } from '../hooks/useVisiblePolling'
-import { useCompetition } from '../hooks/useCompetition'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Todos os status' },
@@ -21,7 +20,6 @@ const STATUS_OPTIONS = [
 ]
 
 export default function MatchesPage() {
-  const { isWorldCup } = useCompetition()
   const [matches, setMatches] = useState<FootballMatch[] | null>(null)
   const [leagues, setLeagues] = useState<FootballLeague[]>([])
   const [error, setError] = useState(false)
@@ -31,10 +29,8 @@ export default function MatchesPage() {
   const [status, setStatus] = useState('')
 
   useEffect(() => {
-    // Na Copa não há filtro de liga (competição única).
-    if (isWorldCup) return
     api.getLeagues().then(r => setLeagues(r.data)).catch(() => setLeagues([]))
-  }, [isWorldCup])
+  }, [])
 
   const load = useCallback(async () => {
     try {
@@ -67,9 +63,7 @@ export default function MatchesPage() {
       <PageHeader title="Jogos" subtitle="Partidas por data, liga e status — clique em um jogo para a análise completa." />
       <div className="flex flex-wrap items-center gap-2.5">
         <DateFilter value={date} onChange={setDate} />
-        {!isWorldCup && (
-          <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
-        )}
+        <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
         <select
           value={status}
           onChange={e => setStatus(e.target.value)}

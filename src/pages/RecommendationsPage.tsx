@@ -15,7 +15,6 @@ import MarketFilter from '../components/MarketFilter'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
-import { useCompetition } from '../hooks/useCompetition'
 import PropsPage from './PropsPage'
 
 type View = 'cards' | 'table'
@@ -54,7 +53,6 @@ function groupByMatch<T extends Groupable>(items: T[]): RecGroup<T>[] {
 }
 
 export default function RecommendationsPage() {
-  const { isWorldCup } = useCompetition()
   const [tab, setTab] = useState<Tab>('mercados')
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
   const [analysis, setAnalysis] = useState<AnalysisRecommendation[] | null>(null)
@@ -66,9 +64,8 @@ export default function RecommendationsPage() {
   const [view, setView] = useState<View>('cards')
 
   useEffect(() => {
-    if (isWorldCup) return
     api.getLeagues().then(r => setLeagues(r.data)).catch(() => setLeagues([]))
-  }, [isWorldCup])
+  }, [])
 
   const load = useCallback(async () => {
     try {
@@ -174,9 +171,7 @@ export default function RecommendationsPage() {
       ) : (
         <>
       <div className="flex flex-wrap items-center gap-2.5">
-        {!isWorldCup && (
-          <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
-        )}
+        <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
         <MarketFilter value={market} onChange={setMarket} />
         <div className="ml-auto flex items-center gap-2">
           <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08]">

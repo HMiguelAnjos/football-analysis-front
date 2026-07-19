@@ -23,19 +23,12 @@ import type {
   FootballTeam,
   FootballPlayer,
 } from '../types'
-import type {
-  CompetitionInfo,
-  WorldCupBracketStage,
-  WorldCupGroup,
-} from '../types'
 import { getApiUrl } from '../config/env'
 import { AUTH_DISABLED } from '../config/flags'
-import { getContext } from '../config/competition'
 
-// Prefixo de rota conforme o contexto ativo: futebol geral usa /football, Copa
-// do Mundo usa /football/world-cup. Os MESMOS métodos servem os dois contextos.
+// Prefixo das rotas de futebol (ligas regulares).
 function fb(path: string): string {
-  return getContext() === 'world_cup' ? `/football/world-cup${path}` : `/football${path}`
+  return `/football${path}`
 }
 
 // ── Token de sessão (área logada) ─────────────────────────────────────────
@@ -137,7 +130,7 @@ export const api = {
   resetPassword: (token: string, new_password: string) =>
     client.post<AuthResponse>('/auth/password/reset', { token, new_password }),
 
-  // ── Jogos (context-aware: futebol geral ou Copa do Mundo) ──────────────────
+  // ── Jogos das ligas ────────────────────────────────────────────────────────
   getMatchesToday: () =>
     client.get<MatchListResponse>(fb('/matches/today')),
   getMatches: (filters?: MatchFilters) =>
@@ -184,7 +177,7 @@ export const api = {
   // Recomendações AO VIVO persistidas (foco escanteios) — pendentes.
   getLiveRecs: () =>
     client.get<LiveReco[]>('/football/live-recommendations/pending', {
-      params: clean({ context: getContext() }),
+      params: clean({ context: 'general' }),
     }),
   setLiveRecResult: (id: number | string, result: 'green' | 'red' | 'void' | 'pending') =>
     client.patch<LiveReco>(`/football/live-recommendations/${id}/result`, null, {
@@ -225,11 +218,6 @@ export const api = {
     client.get<FootballPlayer>(fb('/players/' + id)),
   getOdds: (params?: { league_id?: number | string; market?: string }) =>
     client.get<OddsBoardItem[]>('/football/odds', { params: clean(params) }),
-
-  // ── Copa do Mundo (exclusivos do torneio) ──────────────────────────────────
-  getContexts: () => client.get<CompetitionInfo[]>('/football/context'),
-  getGroups: () => client.get<WorldCupGroup[]>('/football/world-cup/groups'),
-  getBracket: () => client.get<WorldCupBracketStage[]>('/football/world-cup/bracket'),
 
   // ── Admin (mesmo backend) ───────────────────────────────────────────────────
   getAdminUsers: (search?: string) =>

@@ -187,7 +187,7 @@ export interface FootballMatch {
   home_score?: number | null
   away_score?: number | null
   odds?: MatchMainOdds | null
-  // ── Torneio (preenchido no contexto Copa do Mundo) ──────────────────────
+  // ── Fase/grupo (preenchidos só em competições de copa/mata-mata) ────────
   context?: string
   stage?: string | null
   group?: string | null
@@ -203,54 +203,6 @@ export interface FootballMatch {
 export interface MatchListResponse {
   date?: string
   matches: FootballMatch[]
-}
-
-// ─── Copa do Mundo: contexto, grupos, classificação, chaveamento ─────────────
-export interface CompetitionInfo {
-  key: string
-  label: string
-  active: boolean
-  features: string[]
-}
-
-export interface WorldCupStanding {
-  rank: number
-  team: FootballTeamRef
-  points: number
-  played: number
-  win: number
-  draw: number
-  lose: number
-  goals_for: number
-  goals_against: number
-  goal_diff: number
-  group?: string | null
-  form?: string | null
-}
-
-export interface WorldCupGroup {
-  name: string
-  standings: WorldCupStanding[]
-}
-
-export interface WorldCupBracketTie {
-  match_id: number
-  stage: string
-  home: FootballTeamRef
-  away: FootballTeamRef
-  home_score?: number | null
-  away_score?: number | null
-  penalty_home?: number | null
-  penalty_away?: number | null
-  winner?: string | null
-  status: string
-  kickoff?: string | null
-}
-
-export interface WorldCupBracketStage {
-  stage: string
-  label: string
-  ties: WorldCupBracketTie[]
 }
 
 // ─── Estatísticas detalhadas de uma partida (tela de análise) ────────────────

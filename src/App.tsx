@@ -21,7 +21,6 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import { can, type Permission } from './auth/permissions'
-import { useCompetition } from './hooks/useCompetition'
 
 // Guard de rota por PERMISSÃO: a tela só renderiza se o role do usuário tiver
 // a permissão. A proteção REAL é server-side (backend devolve 403); este gate
@@ -41,9 +40,6 @@ function PermissionRoute({
 // Shell autenticado (sidebar + topbar + rotas do produto).
 function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false)
-  // Trocar de contexto (Futebol ↔ Copa) remonta as telas → re-fetch dos dados
-  // do contexto certo, sem precisar tratar contexto em cada página.
-  const { context } = useCompetition()
 
   return (
     <div className="min-h-screen bg-ink-900 text-zinc-100">
@@ -53,7 +49,7 @@ function AppShell() {
       <div className="lg:pl-[208px]">
         <Topbar onOpenMenu={() => setMenuOpen(true)} />
         <main className="pb-[max(3rem,env(safe-area-inset-bottom))]">
-          <Routes key={context}>
+          <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/jogos" element={<MatchesPage />} />
             <Route path="/jogos/:id" element={<MatchAnalysisPage />} />
