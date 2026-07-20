@@ -70,7 +70,9 @@ export default function RecommendationsPage() {
   const load = useCallback(async () => {
     try {
       // Oportunidades de VALOR ao vivo (modelo × odd real), ordenadas por edge.
-      const r = await api.getOpportunities({ limit: 60 })
+      // Liga filtrada no SERVIDOR (o feed é curado/truncado — filtrar no cliente
+      // esconderia ligas fora do top). Mercado continua filtrado no cliente.
+      const r = await api.getOpportunities({ limit: 60, league_id: leagueId || undefined })
       const data = market ? r.data.filter(x => x.market === market) : r.data
       setRecs(data)
       setError(false)
@@ -78,7 +80,7 @@ export default function RecommendationsPage() {
       setError(true)
       setRecs([])
     }
-  }, [market])
+  }, [market, leagueId])
 
   const loadAnalysis = useCallback(async () => {
     try {

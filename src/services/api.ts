@@ -159,7 +159,7 @@ export const api = {
     client.get<FootballRecommendation>(fb(`/recommendations/${id}`)),
   generateRecommendations: (body?: Record<string, unknown>) =>
     client.post<FootballRecommendation[]>(fb('/recommendations/generate'), body ?? {}),
-  getOpportunities: (params?: { limit?: number }) =>
+  getOpportunities: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/recommendations/opportunities'), { params: clean(params) }),
   // Feed global de player props (artilheiro, chutes no gol) dos próximos jogos.
   getProps: (params?: { limit?: number }) =>
