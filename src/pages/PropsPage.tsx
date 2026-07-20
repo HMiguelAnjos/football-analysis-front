@@ -72,6 +72,9 @@ function PropCard({ rec }: { rec: FootballRecommendation }) {
       <div className="flex items-center gap-2 flex-wrap">
         <Pill tone="brand">{marketLabel(rec.market)}</Pill>
         {bet && <span className="text-[12.5px] font-semibold text-zinc-200">{bet}</span>}
+        {rec.tag && (
+          <Pill tone={rec.tag === 'Gancho estratégico' ? 'accent' : 'neutral'}>{rec.tag}</Pill>
+        )}
       </div>
 
       <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
