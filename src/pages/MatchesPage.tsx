@@ -34,11 +34,17 @@ export default function MatchesPage() {
 
   const load = useCallback(async () => {
     try {
-      const r = await api.getMatches({
-        date: date || undefined,
-        league_id: leagueId || undefined,
-        status: status || undefined,
-      })
+      // Sem data → próximos jogos (hoje + próximos dias); com data → aquele dia.
+      const r = date
+        ? await api.getMatches({
+            date,
+            league_id: leagueId || undefined,
+            status: status || undefined,
+          })
+        : await api.getMatchesUpcoming({
+            league_id: leagueId || undefined,
+            status: status || undefined,
+          })
       setMatches(r.data.matches ?? [])
       setError(false)
     } catch {
@@ -60,7 +66,7 @@ export default function MatchesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
-      <PageHeader title="Jogos" subtitle="Partidas por data, liga e status — clique em um jogo para a análise completa." />
+      <PageHeader title="Jogos" subtitle="Próximos jogos por padrão; escolha uma data para ver um dia específico. Clique em um jogo para a análise completa." />
       <div className="flex flex-wrap items-center gap-2.5">
         <DateFilter value={date} onChange={setDate} />
         <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />

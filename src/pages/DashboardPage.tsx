@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
   const loadMatches = useCallback(async () => {
     try {
-      const r = await api.getMatchesToday()
+      const r = await api.getMatchesUpcoming({ limit: 12 })
       setMatches(r.data.matches ?? [])
     } catch { setMatches([]) }
   }, [])
@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      <PageHeader title="Visão Geral" subtitle="Sua central de decisão — desempenho, oportunidades e jogos do dia." />
+      <PageHeader title="Visão Geral" subtitle="Sua central de decisão — desempenho, oportunidades e próximos jogos." />
 
       {/* KPIs da operação */}
       {perf === null ? (
@@ -108,10 +108,10 @@ export default function DashboardPage() {
         )}
       </SectionCard>
 
-      {/* Jogos de hoje */}
-      <SectionCard title="Jogos de hoje" icon="📅"
+      {/* Próximos jogos (hoje + próximos dias) */}
+      <SectionCard title="Próximos jogos" icon="📅"
         action={<Link to="/jogos" className="text-[11px] font-bold uppercase tracking-wider text-brand-300 hover:text-brand-200">Ver todos →</Link>}>
-        <MatchList matches={matches} emptyText="Nenhum jogo programado para hoje." />
+        <MatchList matches={matches} emptyText="Nenhum jogo nos próximos dias." />
       </SectionCard>
 
       {/* Jogadores em destaque */}

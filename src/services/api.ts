@@ -133,6 +133,10 @@ export const api = {
   // ── Jogos das ligas ────────────────────────────────────────────────────────
   getMatchesToday: () =>
     client.get<MatchListResponse>(fb('/matches/today')),
+  // Próximos jogos (hoje + 3 dias). Usado quando não há filtro de data — a
+  // lista por data fica vazia num dia sem partida.
+  getMatchesUpcoming: (params?: { league_id?: number | string; status?: string; limit?: number }) =>
+    client.get<MatchListResponse>(fb('/matches/upcoming'), { params: clean(params) }),
   getMatches: (filters?: MatchFilters) =>
     client.get<MatchListResponse>(fb('/matches'), { params: clean(filters) }),
   getMatch: (id: number | string) =>
