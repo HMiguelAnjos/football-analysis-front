@@ -40,3 +40,33 @@ const MARKET_LABELS: Record<string, string> = {
 export function marketLabel(market: string): string {
   return MARKET_LABELS[market] ?? market
 }
+
+// ─── Linha localizada de mercados de CONTAGEM (cartões, escanteios) ──────────
+// Cartão/escanteio é inteiro: a linha "4.5" é técnica (over 4.5 = 5+ = mais de
+// 4). Em PT mostramos o inteiro amigável ("Mais de 4 cartões"); em outros
+// idiomas mantemos a notação de linha padrão ("Over 4.5 cards"). O idioma vem
+// do navegador (navigator.language).
+const COUNT_MARKET_NOUNS: Record<string, { pt: string; en: string }> = {
+  cards: { pt: 'cartões', en: 'cards' },
+  corners: { pt: 'escanteios', en: 'corners' },
+}
+
+export function browserIsPt(): boolean {
+  if (typeof navigator === 'undefined') return true // SSR / default: app é PT
+  return (navigator.language || 'pt').toLowerCase().startsWith('pt')
+}
+
+/**
+ * Rótulo localizado da linha de um mercado de contagem, ou null quando o
+ * mercado não é de contagem (aí o caller mantém selection + line como está).
+ */
+export function countLineLabel(
+  market: string,
+  line: number | null | undefined,
+): string | null {
+  if (line == null) return null
+  const noun = COUNT_MARKET_NOUNS[market]
+  if (!noun) return null
+  if (browserIsPt()) return `Mais de ${Math.floor(line)} ${noun.pt}`
+  return `Over ${line} ${noun.en}`
+}

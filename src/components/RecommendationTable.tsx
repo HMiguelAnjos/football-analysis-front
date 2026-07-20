@@ -1,5 +1,5 @@
 import type { FootballRecommendation } from '../types'
-import { marketLabel } from '../lib/markets'
+import { marketLabel, countLineLabel } from '../lib/markets'
 import {
   confidenceMeta,
   formatEdge,
@@ -58,7 +58,7 @@ export default function RecommendationTable({
                   </td>
                   <td className="px-4 py-3 text-zinc-300">{marketLabel(r.market)}</td>
                   <td className="px-4 py-3 font-semibold text-brand-200">
-                    {r.selection}{r.line != null ? ` ${r.line}` : ''}
+                    {countLineLabel(r.market, r.line) ?? `${r.selection}${r.line != null ? ` ${r.line}` : ''}`}
                   </td>
                   <td className="px-4 py-3 text-right tabular text-zinc-200">{formatOdd(r.odd)}</td>
                   <td className="px-4 py-3 text-right tabular text-zinc-400">{formatOdd(r.fair_odd)}</td>

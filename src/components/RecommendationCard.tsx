@@ -3,7 +3,7 @@
 // chance com medidor (ou grid de odds/edge quando há odds), motivo e rodapé.
 
 import type { FootballRecommendation } from '../types'
-import { marketLabel } from '../lib/markets'
+import { marketLabel, countLineLabel } from '../lib/markets'
 import {
   Chance, GradeBadge, TeamFlags, gradeFromLabel,
 } from './cards/parts'
@@ -58,8 +58,18 @@ export default function RecommendationCard({ rec, hideMatch = false }: {
       {/* Seleção + mercado */}
       <div className="flex items-center gap-3">
         <span className="inline-flex items-baseline gap-1.5 rounded-xl px-3 py-2 leading-none border bg-brand-500/10 border-brand-500/30 text-brand-200">
-          <span className="text-[13px] font-extrabold">{rec.selection}</span>
-          {rec.line != null && <span className="text-[18px] font-extrabold tabular">{rec.line}</span>}
+          {(() => {
+            // Cartões/escanteios: linha inteira localizada ("Mais de 4 cartões").
+            // Demais mercados: selection + linha crua, como antes.
+            const countLabel = countLineLabel(rec.market, rec.line)
+            if (countLabel) return <span className="text-[13px] font-extrabold">{countLabel}</span>
+            return (
+              <>
+                <span className="text-[13px] font-extrabold">{rec.selection}</span>
+                {rec.line != null && <span className="text-[18px] font-extrabold tabular">{rec.line}</span>}
+              </>
+            )
+          })()}
         </span>
         <div className="min-w-0">
           <div className="text-[13px] font-semibold text-zinc-200">{marketLabel(rec.market)}</div>
