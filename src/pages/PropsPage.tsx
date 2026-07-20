@@ -6,11 +6,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api'
-import type { FootballRecommendation } from '../types'
+import type { FootballLeague, FootballRecommendation } from '../types'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Pill } from '../components/dashboard/parts'
 import { Flag, Gauge, GradeBadge, gradeFromLabel } from '../components/cards/parts'
 import MatchHeader from '../components/MatchHeader'
+import LeagueFilter from '../components/LeagueFilter'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
 
@@ -21,6 +22,7 @@ const MARKET_LABEL: Record<string, string> = {
   anytime_scorer: 'Marcar a qualquer momento',
   player_assists: 'Assistências',
   player_tackles: 'Desarmes',
+  player_cards: 'Cartão',
 }
 const marketLabel = (m: string) => MARKET_LABEL[m] ?? m
 
@@ -31,6 +33,7 @@ const MARKET_FILTERS = [
   { id: 'player_shots_on_target', label: 'Chutes no gol' },
   { id: 'player_shots', label: 'Finalizações' },
   { id: 'player_tackles', label: 'Desarmes' },
+  { id: 'player_cards', label: 'Cartões' },
   { id: 'player_assists', label: 'Assistências' },
 ]
 
@@ -100,21 +103,29 @@ interface MatchGroup {
 
 export default function PropsPage({ embedded = false }: { embedded?: boolean } = {}) {
   const [props, setProps] = useState<FootballRecommendation[] | null>(null)
+  const [leagues, setLeagues] = useState<FootballLeague[]>([])
   const [error, setError] = useState(false)
   const [market, setMarket] = useState('')
+  const [leagueId, setLeagueId] = useState('')
   const [matchFilter, setMatchFilter] = useState('')
+
+  useEffect(() => {
+    api.getLeagues().then(r => setLeagues(r.data)).catch(() => setLeagues([]))
+  }, [])
 
   const load = useCallback(async () => {
     setProps(null)
     setError(false)
     try {
-      const r = await api.getProps({ limit: 80 })
+      // Liga filtrada no SERVIDOR (feed caro/truncado — filtrar no cliente
+      // esconderia ligas fora do top).
+      const r = await api.getProps({ limit: 80, league_id: leagueId || undefined })
       setProps(r.data)
     } catch {
       setError(true)
       setProps([])
     }
-  }, [])
+  }, [leagueId])
 
   useEffect(() => {
     load()
@@ -163,6 +174,7 @@ export default function PropsPage({ embedded = false }: { embedded?: boolean } =
       )}
 
       <div className="flex flex-wrap items-center gap-2.5">
+        <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
         <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08]">
           {MARKET_FILTERS.map(f => (
             <button

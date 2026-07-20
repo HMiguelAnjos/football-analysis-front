@@ -162,7 +162,7 @@ export const api = {
   getOpportunities: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/recommendations/opportunities'), { params: clean(params) }),
   // Feed global de player props (artilheiro, chutes no gol) dos próximos jogos.
-  getProps: (params?: { limit?: number }) =>
+  getProps: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/props'), { params: clean(params) }),
   // Picks de valor AO VIVO (modelo in-play × odd ao vivo).
   getLiveOpportunities: (params?: { limit?: number }) =>
