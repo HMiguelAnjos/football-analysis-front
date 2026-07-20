@@ -104,12 +104,17 @@ interface MatchGroup {
   picks: FootballRecommendation[]
 }
 
+// Abre já no Brasileirão Série A (71): é o foco e onde estão os cartões — sem
+// filtro, o feed pega os jogos mais próximos (qualificatórias europeias, sem
+// cartão) e a aba parecia não ter recomendação de cartão.
+const DEFAULT_PROPS_LEAGUE = '71'
+
 export default function PropsPage({ embedded = false }: { embedded?: boolean } = {}) {
   const [props, setProps] = useState<FootballRecommendation[] | null>(null)
   const [leagues, setLeagues] = useState<FootballLeague[]>([])
   const [error, setError] = useState(false)
   const [market, setMarket] = useState('')
-  const [leagueId, setLeagueId] = useState('')
+  const [leagueId, setLeagueId] = useState(DEFAULT_PROPS_LEAGUE)
   const [matchFilter, setMatchFilter] = useState('')
 
   useEffect(() => {
