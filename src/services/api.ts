@@ -165,23 +165,23 @@ export const api = {
   getProps: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/props'), { params: clean(params) }),
   // Picks de valor AO VIVO (modelo in-play × odd ao vivo).
-  getLiveOpportunities: (params?: { limit?: number }) =>
+  getLiveOpportunities: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/live-opportunities'), { params: clean(params) }),
   // Especialista em CHUTES A GOL ao vivo (jogadores prováveis de chutar mais).
-  getLiveShots: (params?: { limit?: number }) =>
+  getLiveShots: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/live-shots'), { params: clean(params) }),
   // GOLS ao vivo: jogador que ainda pode marcar (taxa + pressão + pênalti).
-  getLiveGoals: (params?: { limit?: number }) =>
+  getLiveGoals: (params?: { limit?: number; league_id?: number | string }) =>
     client.get<FootballRecommendation[]>(fb('/live-goals'), { params: clean(params) }),
   // Engine de ANÁLISE (scores + grade) — pré-jogo e ao vivo.
   getAnalysis: (params?: { limit?: number; include_avoid?: boolean }) =>
     client.get<AnalysisRecommendation[]>(fb('/analysis'), { params: clean(params) }),
-  getLiveAnalysis: (params?: { limit?: number; include_avoid?: boolean }) =>
+  getLiveAnalysis: (params?: { limit?: number; include_avoid?: boolean; league_id?: number | string }) =>
     client.get<AnalysisRecommendation[]>(fb('/live-analysis'), { params: clean(params) }),
   // Recomendações AO VIVO persistidas (foco escanteios) — pendentes.
-  getLiveRecs: () =>
+  getLiveRecs: (params?: { league_id?: number | string }) =>
     client.get<LiveReco[]>('/football/live-recommendations/pending', {
-      params: clean({ context: 'general' }),
+      params: clean({ context: 'general', ...params }),
     }),
   setLiveRecResult: (id: number | string, result: 'green' | 'red' | 'void' | 'pending') =>
     client.patch<LiveReco>(`/football/live-recommendations/${id}/result`, null, {

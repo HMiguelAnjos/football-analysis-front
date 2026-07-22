@@ -5,12 +5,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../services/api'
-import type { AnalysisRecommendation, FootballRecommendation, LiveReco } from '../types'
+import type { AnalysisRecommendation, FootballLeague, FootballRecommendation, LiveReco } from '../types'
 import RecommendationCard from '../components/RecommendationCard'
 import LiveRecoCard from '../components/LiveRecoCard'
 import AnalysisCard from '../components/AnalysisCard'
 import PlayerLiveCard from '../components/PlayerLiveCard'
 import PageHeader from '../components/PageHeader'
+import LeagueFilter from '../components/LeagueFilter'
 import { SectionEmpty } from '../components/dashboard/parts'
 import { Skeleton } from '../components/Skeleton'
 import { InlineError } from '../components/States'
@@ -33,40 +34,49 @@ const TABS: [Tab, string][] = [
   ['chutes', 'Chutes a Gol'], ['mercados', 'Mercados'], ['analise', 'Análise'],
 ]
 
-async function fetchTab(t: Tab): Promise<TabData> {
-  if (t === 'escanteios') return (await api.getLiveRecs()).data
-  if (t === 'gols') return (await api.getLiveGoals({ limit: 50 })).data
-  if (t === 'chutes') return (await api.getLiveShots({ limit: 50 })).data
-  if (t === 'analise') return (await api.getLiveAnalysis({ limit: 40 })).data
-  return (await api.getLiveOpportunities({ limit: 40 })).data
+async function fetchTab(t: Tab, league?: string): Promise<TabData> {
+  const lg = league || undefined
+  if (t === 'escanteios') return (await api.getLiveRecs({ league_id: lg })).data
+  if (t === 'gols') return (await api.getLiveGoals({ limit: 50, league_id: lg })).data
+  if (t === 'chutes') return (await api.getLiveShots({ limit: 50, league_id: lg })).data
+  if (t === 'analise') return (await api.getLiveAnalysis({ limit: 40, league_id: lg })).data
+  return (await api.getLiveOpportunities({ limit: 40, league_id: lg })).data
 }
 
 export default function LivePage() {
   const [tab, setTab] = useState<Tab>('escanteios')
-  // Cache por aba (sobrevive à troca de aba) — chave da resposta rápida.
-  const cache = useRef<Partial<Record<Tab, TabData>>>({})
+  const [leagueId, setLeagueId] = useState('')
+  const [leagues, setLeagues] = useState<FootballLeague[]>([])
+  // Cache por aba+LIGA — trocar de liga não pode mostrar dado da anterior.
+  const cache = useRef<Record<string, TabData>>({})
   const [data, setData] = useState<TabData | null>(null)
   const [error, setError] = useState(false)
+  const ckey = `${tab}|${leagueId}`
+
+  useEffect(() => {
+    api.getLeagues().then(r => setLeagues(r.data)).catch(() => setLeagues([]))
+  }, [])
 
   const load = useCallback(async () => {
+    const key = `${tab}|${leagueId}`
     try {
-      const d = await fetchTab(tab)
-      cache.current[tab] = d
+      const d = await fetchTab(tab, leagueId)
+      cache.current[key] = d
       setData(d)
       setError(false)
     } catch {
       setError(true)
-      if (!cache.current[tab]) setData([])
+      if (!cache.current[key]) setData([])
     }
-  }, [tab])
+  }, [tab, leagueId])
 
   useEffect(() => {
-    // Mostra o cache da aba na hora (se houver); senão, skeleton.
-    setData(cache.current[tab] ?? null)
+    // Mostra o cache da aba/liga na hora (se houver); senão, skeleton.
+    setData(cache.current[ckey] ?? null)
     load()
     const id = setInterval(load, REFRESH_MS)
     return () => clearInterval(id)
-  }, [tab, load])
+  }, [ckey, load])
 
   const loading = data === null
   const empty = data?.length === 0
@@ -86,6 +96,10 @@ export default function LivePage() {
           </button>
         )}
       />
+
+      <div className="flex flex-wrap items-center gap-2.5">
+        <LeagueFilter leagues={leagues} value={leagueId} onChange={setLeagueId} />
+      </div>
 
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
         {TABS.map(([id, label]) => (
