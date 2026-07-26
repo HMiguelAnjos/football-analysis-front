@@ -53,7 +53,8 @@ function groupByMatch<T extends Groupable>(items: T[]): RecGroup<T>[] {
 }
 
 export default function RecommendationsPage() {
-  const [tab, setTab] = useState<Tab>('mercados')
+  // Abre em JOGADORES (foco do produto — mais relevante que mercados).
+  const [tab, setTab] = useState<Tab>('jogadores')
   const [recs, setRecs] = useState<FootballRecommendation[] | null>(null)
   const [analysis, setAnalysis] = useState<AnalysisRecommendation[] | null>(null)
   const [leagues, setLeagues] = useState<FootballLeague[]>([])
@@ -111,7 +112,7 @@ export default function RecommendationsPage() {
       <PageHeader title="Pré-Jogo" subtitle="Entradas do modelo antes da bola rolar — mercados, jogadores e análise por scores." />
       {/* Toggle principal: mercados (seleção) ↔ jogadores (props) */}
       <div className="flex gap-0.5 p-0.5 rounded-lg bg-white/[0.04] border border-white/[0.08] w-fit">
-        {([['mercados', 'Mercados'], ['jogadores', 'Jogadores'], ['analise', 'Análise']] as const).map(([id, label]) => (
+        {([['jogadores', 'Jogadores'], ['mercados', 'Mercados'], ['analise', 'Análise']] as const).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
