@@ -452,6 +452,8 @@ export interface FootballPickResult {
   selection: string
   odd?: number | null
   result: PickResultStatus
+  /** Valor real que decidiu o pick (ex.: "3 finalizações no gol", "11 escanteios"). */
+  actual?: string | null
   /** Lucro/prejuízo simulado em unidades (ex.: +0.85, -1.0). */
   profit?: number | null
   analyst_name?: string | null

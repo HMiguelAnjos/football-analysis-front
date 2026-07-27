@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import MatchesPage from './pages/MatchesPage'
 import MatchAnalysisPage from './pages/MatchAnalysisPage'
 import RecommendationsPage from './pages/RecommendationsPage'
+import PicksResultsPage from './pages/PicksResultsPage'
 import LivePage from './pages/LivePage'
 import LiveResultsAdminPage from './pages/LiveResultsAdminPage'
 import LivePicksPage from './pages/LivePicksPage'
@@ -62,6 +63,7 @@ function AppShell() {
             <Route path="/ligas" element={<LeaguesPage />} />
             <Route path="/times" element={<TeamsPage />} />
             <Route path="/jogadores" element={<PlayersPage />} />
+            <Route path="/resultados" element={<PicksResultsPage />} />
             <Route path="/odds" element={<OddsPage />} />
             {/* Telas institucionais aposentadas → redireciona pro foco em aposta */}
             <Route path="/grupos" element={<Navigate to="/" replace />} />

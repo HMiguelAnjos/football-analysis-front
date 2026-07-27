@@ -199,7 +199,8 @@ export const api = {
     client.delete<void>(fb(`/live-picks/${id}`)),
 
   // ── Resultados / performance ────────────────────────────────────────────────
-  getPickResults: () => client.get<FootballPickResult[]>(fb('/pick-results')),
+  getPickResults: (limit = 200) =>
+    client.get<FootballPickResult[]>(fb('/pick-results'), { params: { limit } }),
   getPerformance: () =>
     client.get<FootballPerformanceSummary>(fb('/performance')),
   // Breakdown por mercado + calibração por faixa de confiança (admin).
