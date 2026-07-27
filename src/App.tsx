@@ -63,7 +63,6 @@ function AppShell() {
             <Route path="/ligas" element={<LeaguesPage />} />
             <Route path="/times" element={<TeamsPage />} />
             <Route path="/jogadores" element={<PlayersPage />} />
-            <Route path="/resultados" element={<PicksResultsPage />} />
             <Route path="/odds" element={<OddsPage />} />
             {/* Telas institucionais aposentadas → redireciona pro foco em aposta */}
             <Route path="/grupos" element={<Navigate to="/" replace />} />
@@ -84,6 +83,14 @@ function AppShell() {
               element={
                 <PermissionRoute permission="publishPicks">
                   <LiveResultsAdminPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="/resultados"
+              element={
+                <PermissionRoute permission="viewGlobalPerformance">
+                  <PicksResultsPage />
                 </PermissionRoute>
               }
             />
