@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
         {/* Marca */}
         <div className="flex items-center justify-center gap-2.5 mb-6">
           <img
-            src="/clutchpro-symbol.png"
+            src="/clutchpro-symbol-2.png"
             alt=""
             className="h-9 w-auto object-contain"
           />
