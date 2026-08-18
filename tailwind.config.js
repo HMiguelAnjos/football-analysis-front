@@ -17,20 +17,21 @@ export default {
     extend: {
       colors: {
         // ── Identidade Football (jun/2026) ───────────────────────────
-        // VERDE primário (escudo do logo) — qualquer `bg-brand-500` vira
-        // verde (CTA, nav ativo, focus ring). Escala calibrada pra dark #111.
+        // LARANJA primário (nova logo) — qualquer `bg-brand-500` vira laranja
+        // (CTA, nav ativo, focus ring, nome ClutchPro). Escala calibrada p/ dark
+        // #111. O verde/vermelho de desempenho é semântico (emerald/red), à parte.
         brand: {
-          50:  '#e9fcec',
-          100: '#c7f7d0',
-          200: '#90eea3',
-          300: '#52df73',
-          400: '#2ecb53',  // hover/active text
-          500: '#16a92f',  // brand primário (verde grama do logo)
-          600: '#108a26',  // hover/pressed
-          700: '#0d6d1f',
-          800: '#0b5519',
-          900: '#073c12',
-          950: '#03200a',
+          50:  '#fff4ec',
+          100: '#ffe3cc',
+          200: '#ffc599',
+          300: '#ffa15c',
+          400: '#ff7f2a',  // hover/active text
+          500: '#f26311',  // brand primário (laranja da logo)
+          600: '#d44f08',  // hover/pressed
+          700: '#ac3e0a',
+          800: '#88330d',
+          900: '#6f2a0e',
+          950: '#3b1304',
         },
         // DOURADO/amarelo da seta do logo — destaques premium (valor forte,
         // badges, linhas). Substitui o âmbar antigo.
