@@ -155,7 +155,7 @@ export default function Sidebar({
           aria-label="ClutchPro Football"
         >
           <img
-            src="/clutchpro-symbol-2.png"
+            src="/clutchpro-symbol-3.png"
             alt=""
             className="h-12 w-auto object-contain shrink-0
                        transition-transform duration-200 group-hover:scale-[1.05]"
